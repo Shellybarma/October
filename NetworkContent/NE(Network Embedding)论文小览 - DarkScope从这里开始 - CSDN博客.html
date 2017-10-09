@@ -1,0 +1,1436 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0056)http://blog.csdn.net/dark_scope/article/details/74279582 -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script type="text/javascript" async="" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/pr.js.下载"></script>          
+            <link rel="canonical" href="http://blog.csdn.net/dark_scope/article/details/74279582"> 
+
+   
+
+  
+ <meta http-equiv="Cache-Control" content="no-siteapp"><link rel="alternate" media="handheld" href="http://blog.csdn.net/dark_scope/article/details/74279582#">
+
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848"> 
+       
+    <title>NE(Network Embedding)论文小览 - DarkScope从这里开始
+        - CSDN博客</title>
+    
+    <meta name="description" content="NE(Network Embedding)论文小览自从word2vec横空出世，似乎一切东西都在被embedding，今天我们要关注的这个领域是Network Embedding，也就是基于一个Graph，将节点或者边投影到低维向量空间中，再用于后续的机器学习或者数据挖掘任务，对于复杂网络来说这是比较新的尝试，而且取得了一些效果。 本文大概梳理了最近几年流行的一些方法和论文，paper主要是来自t">
+
+    <meta name="keywords" content="机器学习,网络,数据挖掘">
+
+   
+    <script src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/hm.js.下载"></script><script type="text/javascript" async="" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/mqkonkoqenepgdzkon.js.下载"></script><script src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/blog_static_head.min.js.下载" type="text/javascript"></script>
+
+    
+        <!--new top-->
+       
+       
+        <!--new top-->
+    
+      <!-- ad begin -->
+         
+    <!-- ad end-->
+
+    <link rel="Stylesheet" type="text/css" href="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/style.css">
+
+    
+
+    <link id="RSSLink" title="RSS" type="application/rss+xml" rel="alternate" href="http://blog.csdn.net/Dark_Scope/rss/list">
+    <link rel="shortcut icon" href="http://c.csdnimg.cn/public/favicon.ico">
+    <link type="text/css" rel="stylesheet" href="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/default.css">
+ 
+
+
+
+    <link href="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/csdn_public_blog_detail.min.css" type="text/css" rel="stylesheet">
+     
+         <link rel="stylesheet" href="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/csdn_blog_detail.min.css">
+
+  
+
+
+    <!-- 请置于所有广告位代码之前 --> 
+            <script src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/ds.js.下载"></script>
+
+<script src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/share.js.下载"></script><link href="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/bdsstyle.css" rel="stylesheet" type="text/css"><script src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/wxLogin.js.下载"></script><link rel="stylesheet" type="text/css" href="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/style(1).css"><link type="text/css" rel="stylesheet" href="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/style(2).css"><script src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/logger.js.下载"></script><style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
+.MathJax_Hover_Arrow {position: absolute; width: 15px; height: 11px; cursor: pointer}
+</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 2px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_MenuItem {padding: 2px 2em; background: transparent}
+.MathJax_MenuArrow {position: absolute; right: .5em; color: #666666}
+.MathJax_MenuActive .MathJax_MenuArrow {color: white}
+.MathJax_MenuArrow.RTL {left: .5em; right: auto}
+.MathJax_MenuCheck {position: absolute; left: .7em}
+.MathJax_MenuCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuRadioCheck {position: absolute; left: 1em}
+.MathJax_MenuRadioCheck.RTL {right: 1em; left: auto}
+.MathJax_MenuLabel {padding: 2px 2em 4px 1.33em; font-style: italic}
+.MathJax_MenuRule {border-top: 1px solid #CCCCCC; margin: 4px 1px 0px}
+.MathJax_MenuDisabled {color: GrayText}
+.MathJax_MenuActive {background-color: Highlight; color: HighlightText}
+.MathJax_Menu_Close {position: absolute; width: 31px; height: 31px; top: -15px; left: -15px}
+</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
+#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+</style><style type="text/css">.MathJax_Preview {color: #888}
+#MathJax_Message {position: fixed; left: 1em; bottom: 1.5em; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style><link rel="stylesheet" href="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/share_style0_16.css"><style type="text/css">.MathJax_Display {text-align: center; margin: 1em 0em; position: relative; display: block!important; text-indent: 0; max-width: none; max-height: none; min-width: 0; min-height: 0; width: 100%}
+.MathJax .merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MathJax .MJX-monospace {font-family: monospace}
+.MathJax .MJX-sans-serif {font-family: sans-serif}
+#MathJax_Tooltip {background-color: InfoBackground; color: InfoText; border: 1px solid black; box-shadow: 2px 2px 5px #AAAAAA; -webkit-box-shadow: 2px 2px 5px #AAAAAA; -moz-box-shadow: 2px 2px 5px #AAAAAA; -khtml-box-shadow: 2px 2px 5px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true'); padding: 3px 4px; z-index: 401; position: absolute; left: 0; top: 0; width: auto; height: auto; display: none}
+.MathJax {display: inline; font-style: normal; font-weight: normal; line-height: normal; font-size: 100%; font-size-adjust: none; text-indent: 0; text-align: left; text-transform: none; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; direction: ltr; max-width: none; max-height: none; min-width: 0; min-height: 0; border: 0; padding: 0; margin: 0}
+.MathJax img, .MathJax nobr, .MathJax a {border: 0; padding: 0; margin: 0; max-width: none; max-height: none; min-width: 0; min-height: 0; vertical-align: 0; line-height: normal; text-decoration: none}
+img.MathJax_strut {border: 0!important; padding: 0!important; margin: 0!important; vertical-align: 0!important}
+.MathJax span {display: inline; position: static; border: 0; padding: 0; margin: 0; vertical-align: 0; line-height: normal; text-decoration: none}
+.MathJax nobr {white-space: nowrap!important}
+.MathJax img {display: inline!important; float: none!important}
+.MathJax * {transition: none; -webkit-transition: none; -moz-transition: none; -ms-transition: none; -o-transition: none}
+.MathJax_Processing {visibility: hidden; position: fixed; width: 0; height: 0; overflow: hidden}
+.MathJax_Processed {display: none!important}
+.MathJax_ExBox {display: block!important; overflow: hidden; width: 1px; height: 60ex; min-height: 0; max-height: none}
+.MathJax .MathJax_EmBox {display: block!important; overflow: hidden; width: 1px; height: 60em; min-height: 0; max-height: none}
+.MathJax .MathJax_HitBox {cursor: text; background: white; opacity: 0; filter: alpha(opacity=0)}
+.MathJax .MathJax_HitBox * {filter: none; opacity: 1; background: transparent}
+#MathJax_Tooltip * {filter: none; opacity: 1; background: transparent}
+@font-face {font-family: MathJax_Main; src: url('http://static.blog.csdn.net/public/res/bower-libs/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Main-Regular.woff?rev=2.4-beta-2') format('woff'), url('http://static.blog.csdn.net/public/res/bower-libs/MathJax/fonts/HTML-CSS/TeX/otf/MathJax_Main-Regular.otf?rev=2.4-beta-2') format('opentype')}
+@font-face {font-family: MathJax_Main-bold; src: url('http://static.blog.csdn.net/public/res/bower-libs/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Main-Bold.woff?rev=2.4-beta-2') format('woff'), url('http://static.blog.csdn.net/public/res/bower-libs/MathJax/fonts/HTML-CSS/TeX/otf/MathJax_Main-Bold.otf?rev=2.4-beta-2') format('opentype')}
+@font-face {font-family: MathJax_Main-italic; src: url('http://static.blog.csdn.net/public/res/bower-libs/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Main-Italic.woff?rev=2.4-beta-2') format('woff'), url('http://static.blog.csdn.net/public/res/bower-libs/MathJax/fonts/HTML-CSS/TeX/otf/MathJax_Main-Italic.otf?rev=2.4-beta-2') format('opentype')}
+@font-face {font-family: MathJax_Math-italic; src: url('http://static.blog.csdn.net/public/res/bower-libs/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Math-Italic.woff?rev=2.4-beta-2') format('woff'), url('http://static.blog.csdn.net/public/res/bower-libs/MathJax/fonts/HTML-CSS/TeX/otf/MathJax_Math-Italic.otf?rev=2.4-beta-2') format('opentype')}
+@font-face {font-family: MathJax_Caligraphic; src: url('http://static.blog.csdn.net/public/res/bower-libs/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Caligraphic-Regular.woff?rev=2.4-beta-2') format('woff'), url('http://static.blog.csdn.net/public/res/bower-libs/MathJax/fonts/HTML-CSS/TeX/otf/MathJax_Caligraphic-Regular.otf?rev=2.4-beta-2') format('opentype')}
+@font-face {font-family: MathJax_Size1; src: url('http://static.blog.csdn.net/public/res/bower-libs/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Size1-Regular.woff?rev=2.4-beta-2') format('woff'), url('http://static.blog.csdn.net/public/res/bower-libs/MathJax/fonts/HTML-CSS/TeX/otf/MathJax_Size1-Regular.otf?rev=2.4-beta-2') format('opentype')}
+@font-face {font-family: MathJax_Size2; src: url('http://static.blog.csdn.net/public/res/bower-libs/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Size2-Regular.woff?rev=2.4-beta-2') format('woff'), url('http://static.blog.csdn.net/public/res/bower-libs/MathJax/fonts/HTML-CSS/TeX/otf/MathJax_Size2-Regular.otf?rev=2.4-beta-2') format('opentype')}
+@font-face {font-family: MathJax_Size3; src: url('http://static.blog.csdn.net/public/res/bower-libs/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Size3-Regular.woff?rev=2.4-beta-2') format('woff'), url('http://static.blog.csdn.net/public/res/bower-libs/MathJax/fonts/HTML-CSS/TeX/otf/MathJax_Size3-Regular.otf?rev=2.4-beta-2') format('opentype')}
+@font-face {font-family: MathJax_Size4; src: url('http://static.blog.csdn.net/public/res/bower-libs/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Size4-Regular.woff?rev=2.4-beta-2') format('woff'), url('http://static.blog.csdn.net/public/res/bower-libs/MathJax/fonts/HTML-CSS/TeX/otf/MathJax_Size4-Regular.otf?rev=2.4-beta-2') format('opentype')}
+.MathJax .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style></head>
+
+
+<body><div id="BAIDU_DUP_fp_wrapper" style="position: absolute; left: -1px; bottom: -1px; z-index: 0; width: 0px; height: 0px; overflow: hidden; visibility: hidden; display: none;"><iframe id="BAIDU_DUP_fp_iframe" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/o.html" style="width: 0px; height: 0px; visibility: hidden; display: none;"></iframe></div><div style="visibility: hidden; overflow: hidden; position: absolute; top: 0px; height: 1px; width: auto; padding: 0px; border: 0px; margin: 0px; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal;"><div id="MathJax_Hidden"></div></div><div id="MathJax_Message" style="display: none;"></div><iframe frameborder="0" style="display: none;" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/saved_resource.html"></iframe><div class="csdn-toolbar csdn-toolbar-skin-black ">        <div class="container row center-block ">          <div class="col-md-3 pull-left logo clearfix"><a href="http://www.csdn.net/?ref=toolbar" title="CSDN首页" target="_blank" class="icon"></a><a title="频道首页" href="http://blog.csdn.net/?ref=toolbar_logo" class="img blog-icon"></a></div>          <div class="pull-right login-wrap unlogin">            <ul class="btns">              <li class="loginlink"><a href="https://passport.csdn.net/account/login?ref=toolbar" target="_top">登录&nbsp;</a>|<a target="_top" href="http://passport.csdn.net/account/mobileregister?ref=toolbar&amp;action=mobileRegister">&nbsp;注册</a></li>              <li class="search">                <div class="icon on-search-icon">                  <div class="wrap">                    <div class="curr-icon-wrap">                      <div class="curr-icon"></div>                    </div>                    <form action="http://so.csdn.net/search" id="toolbar_search" method="get" target="_blank">                      <input type="hidden" value="toolbar" name="ref" accesskey="2">                      <div class="border">                        <input placeholder="搜索" type="text" value="" name="q" accesskey="2"><span class="icon-enter-sm"></span>                      </div>                    </form>                  </div>                </div>              </li>              <li class="favor">                <div class="icon on-favor-icon">                  <div class="wrap">                    <div class="curr-icon-wrap">                      <div class="curr-icon"></div>                    </div>                    <div style="display:none;" class="favor-success"><span class="msg">收藏成功</span>                      <div class="btns"><span class="btn btn-primary ok">确定</span></div>                    </div>                    <div style="display:none;" class="favor-failed"><span class="icon-danger-lg"></span><span class="msg">收藏失败，请重新收藏</span>                      <div class="btns"><span class="btn btn-primary ok">确定</span></div>                    </div>                    <form role="form" class="form-horizontal favor-form">                      <div class="form-group">                        <div class="clearfix">                          <label for="input-title" class="col-sm-2 control-label"><span class="red_txt">*</span>标题</label>                          <div class="col-sm-10">                            <input id="inputTitle" type="text" placeholder="" class="title form-control">                          </div>                        </div>                        <div class="alert alert-danger"><strong></strong>标题不能为空</div>                      </div>                      <div class="form-group" style="display:none;">                        <label for="input-url" class="col-sm-2 control-label">网址</label>                        <div class="col-sm-10">                          <input id="input-url" type="text" placeholder="" class="url form-control">                        </div>                      </div>                      <div class="form-group">                        <label for="input-tag" class="col-sm-2 tag control-label">标签</label>                        <div class="col-sm-10">                          <input id="input-tag" type="text" class="form-control tag">                        </div>                      </div>                      <div class="form-group">                        <label for="input-description" class="description col-sm-2 control-label">位置</label>                        <div class="col-sm-10">                          <div class="my_lib_box">                            个人主页&nbsp;-&nbsp;<a href="http://my.csdn.net/" target="_blank">我的知识</a>                          </div>                          <div class="checkbox">                            <div class="pull-left">                              <label>                                <input type="checkbox" name="share" class="save_lib_map" checked="checked">同时保存至：                              </label>                            </div>                            <div class="pull-left">                              <div class="dropdown">                                <button id="toolbar_sele_map" type="button">                                  选择知识图谱                                  <i class="fa fa-chevron-down"></i>                                </button>                                <div class="top_arr"></div>                                <div class="outside">                                  <ul class="dropdown-menu" id="toolbar_Design_knowledge"><li>选择知识图谱</li></ul>                                </div>                              </div>                            </div>                            <div class="pull-left new_txt">                              <a href="http://lib.csdn.net/my/create/structure" target="_blank">新建？</a>                            </div>                          </div>                        </div>                      </div>                      <div class="form-group">                        <div class="col-sm-offset-2 col-sm-10 ft">                          <div class="col-sm-4 pull-left" style="display:none">                            <div class="checkbox">                              <label>                                <input type="checkbox" name="share" checked="checked" class="share">公开                              </label>                            </div>                          </div>                          <div class="col-sm-8 pull-right favor-btns">                            <button type="button" class="cancel btn btn-default">取消</button>                            <button type="submit" class="submit btn btn-primary">收藏</button>                          </div>                        </div>                      </div>                    </form>                  </div>                </div>              </li>              <li class="notify">                <div style="display:none" class="number"></div>                <div style="display:none" class="icon-hasnotes-sm"></div>                <div id="header_notice_num"></div>                <div class="icon on-notify-icon">                  <div class="wrap">                    <div class="curr-icon-wrap">                      <div class="curr-icon"></div>                    </div>                    <div id="note1" class="csdn_note">                      <div class="box"></div>                    <iframe src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/saved_resource(1).html" frameborder="0" allowtransparency="true" style="z-index:-1;position:absolute;top:0;left:0;width:100%;height:100%;background:transparent"></iframe></div>                  </div>                </div>              </li>              <li class="ugc">                <div class="icon on-ugc-icon">                  <div class="wrap clearfix">                    <div class="curr-icon-wrap">                      <div class="curr-icon"></div>                    </div>                    <dl>                      <dt><a href="http://geek.csdn.net/news/expert?ref=toolbar" target="_blank" class="p-news clearfix" style="display:none;"><em class="icon"></em><span>分享资讯</span></a></dt>                      <dt style="border: none;"><a href="http://u.download.csdn.net/upload?ref=toolbar" target="_blank" class="p-doc clearfix"><em class="icon"></em><span>传PPT/文档</span></a></dt>                      <dt><a href="http://bbs.csdn.net/topics/new?ref=toolbar" target="_blank" class="p-ask clearfix"><em class="icon"></em><span>提问题</span></a></dt>                      <dt><a href="http://write.blog.csdn.net/postedit?ref=toolbar" target="_blank" class="p-blog clearfix"><em class="icon"></em><span>写博客</span></a></dt>                      <dt><a href="http://u.download.csdn.net/upload?ref=toolbar" target="_blank" class="p-src clearfix"><em class="icon"></em><span>传资源</span></a></dt>                      <dt><a href="https://code.csdn.net/projects/new?ref=toolbar" target="_blank" class="c-obj clearfix"><em class="icon"></em><span>创建项目</span></a></dt>                      <dt><a href="https://code.csdn.net/snippets/new?ref=toolbar" target="_blank" class="c-code clearfix"><em class="icon"></em><span>创建代码片</span></a></dt>                    </dl>                  </div>                </div>              </li>              <li class="profile">                <div class="icon on-profile-icon"><img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/100x100.jpg" class="curr-icon-img">                  <div class="wrap clearfix">                    <div class="curr-icon-wrap">                      <div class="curr-icon"></div>                    </div>                    <div class="bd">                      <dl class="clearfix">                        <dt class="pull-left img"><a target="_blank" href="http://my.csdn.net/?ref=toolbar" class="avatar"><img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/100x100.jpg"></a></dt>                        <dd class="info" style="border: none;"><a target="_blank" href="http://my.csdn.net/?ref=toolbar" class="nickname"></a><a class="set-nick" href="https://passport.csdn.net/account/profile">设置昵称<span class="write-icon"></span></a><span class="dec"><a class="fill-dec" href="http://my.csdn.net/" target="_blank">编辑自我介绍，让更多人了解你<span class="write-icon"></span></a></span></dd>                      </dl>                    </div>                    <div class="ft clearfix"><a target="_blank" href="http://my.csdn.net/my/account/changepwd?ref=toolbar" class="pull-left"><span class="icon-cog"></span>帐号设置</a><a href="https://passport.csdn.net/account/logout?ref=toolbar" target="_top" class="pull-left" style="margin-left:132px; width:18px; height:27px; white-space:nowrap; overflow:hidden;"><span class="icon-signout"></span><span class="out">退出</span></a></div>                  </div>                </div>              </li>              <li class="apps">                <div id="chasnew123" class="hasnew" style="display: none;"></div>                <div id="cappsarea123" class="icon on-apps-icon">                  <div class="wrap clearfix">                    <div class="curr-icon-wrap">                      <div class="curr-icon"></div>                    </div>                  <div class="detail">                    <dl>                      <dt>                        <h5>社区</h5>                      </dt>                      <dd> <a href="http://blog.csdn.net/?ref=toolbar" target="_blank">博客</a></dd>                      <dd> <a href="http://bbs.csdn.net/?ref=toolbar" target="_blank">论坛</a></dd>                      <dd> <a href="http://download.csdn.net/?ref=toolbar" target="_blank">下载</a></dd>                      <dd> <a href="http://lib.csdn.net/?ref=toolbar" target="_blank">知识库</a></dd>                      <dd><a href="http://ask.csdn.net/?ref=toolbar" target="_blank">技术问答</a></dd>                      <dd><a href="http://geek.csdn.net/?ref=toolbar" target="_blank">极客头条</a></dd>                      <dd style="display:none"> <a href="http://hero.csdn.net/?ref=toolbar" target="_blank">英雄会</a></dd>                    </dl>                  </div>                  <div class="detail">                    <dl>                      <dt>                        <h5>服务</h5>                      </dt>                      <dd style="display:none"> <a href="http://job.csdn.net/?ref=toolbar" target="_blank">JOB<img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/new.gif" style="display: none; margin-top: -26px; width: 23px;"></a></dd>                      <dd> <a href="http://edu.csdn.net/?ref=toolbar" target="_blank">学院<img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/new.gif" style="display: none; margin-top: -26px; width: 23px;"></a></dd>                      <dd> <a href="https://code.csdn.net/?ref=toolbar" target="_blank">CODE</a></dd>                      <dd> <a href="http://huiyi.csdn.net/?ref=toolbar" target="_blank">活动</a></dd>                      <dd> <a href="http://www.csto.com/?ref=toolbar" target="_blank">CSTO</a></dd>                      <dd> <a href="http://mall.csdn.net/?ref=toolbar" target="_blank">C币兑换<img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/new.gif" style="display: none; margin-top: -26px; width: 23px;"></a></dd>                    </dl>                  </div>                  <div class="detail last">                    <dl>                      <dt>                        <h5>俱乐部</h5>                      </dt>                      <dd> <a href="http://cto.csdn.net/?ref=toolbar" target="_blank">CTO俱乐部</a></dd>                      <dd> <a href="http://student.csdn.net/?ref=toolbar" target="_blank">高校俱乐部</a></dd>                    </dl>                  </div>                </div>              </div>            </li>            </ul>          </div>        </div>    </div>  
+     
+        <div class="tracking-ad" data-view="true" data-mod="ad_popu_72" data-mtp="62" data-order="40" data-con="ad_content_2072">
+                     <script id="popuLayer_js_q" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/popuLayer.js.下载" defer="defer" type="text/javascript"></script>
+                <div id="layerd" style="position: fixed; bottom: 0px; right: 0px; line-height: 0px; z-index: 1000; width: 300px; height: 278px;">
+    	                <div class="J_close layer_close" style="display:;background-color:#efefef;padding:0px;color:#333;font:12px/24px Helvetica,Tahoma,Arial,sans-serif;text-align:right;">关闭</div><!-- 广告占位容器 -->
+                    <div id="cpro_u2895327">
+                        <!-- 投放代码 -->
+                        <script src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/ds.js.下载"></script>
+                       <!-- 广告位：PC端-博客详情页右侧弹窗-300*250 -->
+                            <script>
+                                (function () {
+                                    var s = "_" + Math.random().toString(36).slice(2);
+                                    document.write('<div id="' + s + '"></div>');
+                                    (window.slotbydup = window.slotbydup || []).push({
+                                        id: '4740870',
+                                        container: s,
+                                        size: '300,250',
+                                        display: 'inlay-fix'
+                                    });
+                                })();
+                            </script><div id="_wivakvenn2h"></div><script charset="utf-8" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/ecnm"></script><div><iframe width="300" frameborder="0" height="250" scrolling="no" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/s.html"></iframe><p style="display:none;"></p></div><script type="text/javascript" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/ojylrgbykmqybf.js.下载"></script>
+                    </div></div>
+                <script>  document.getElementById("popuLayer_js_q").onload = function () {
+      var styObjd = styObj = { width: "300px", "height": parseInt(250) + 28 };
+      window.CSDN.Layer.PopuLayer("#layerd", { storageName: "layerd", styleObj: styObjd, total: 50, expoire: 1000 * 60 });
+  }</script>
+            
+     
+        </div>
+
+    <!-- 广告位开始 -->
+        
+    <!-- 广告位结束 -->
+
+    
+   
+      <!--new top-->
+    <script id="toolbar-tpl-scriptId" fixed="true" prod="blog" skin="black" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/html.js.下载" type="text/javascript"></script>
+     <!--new top-->
+    <div id="container">
+        <div id="header">
+    <div class="header">
+        <div id="blog_title">
+            <h2>
+                <a href="http://blog.csdn.net/dark_scope">DarkScope从这里开始</a></h2>
+            <h3>a learner,like Machine Learning.</h3>
+            <div class="clear">
+            </div>
+        </div>
+        <div class="clear">
+        </div>
+        
+     
+    </div>
+</div>
+<div id="navigator">
+    <div class="navigator_bg">
+    </div>
+    <div class="navigator">
+        <ul>           
+                <li id="btnContents"><a href="http://blog.csdn.net/dark_scope?viewmode=contents"><span onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_mulu&#39;])">
+                    <img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/ico_list.gif">目录视图</span></a></li>
+                <li id="btnView"><a href="http://blog.csdn.net/dark_scope?viewmode=list"><span onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_zhaiyao&#39;])">
+                    <img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/ico_summary.gif">摘要视图</span></a></li>
+                <li id="btnRss"><a href="http://blog.csdn.net/dark_scope/rss/list"><span onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_RSS&#39;])">
+                    <img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/ico_rss.gif">订阅</span></a></li>                
+            
+
+            </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    var username = "Dark_Scope";
+    var _blogger = username;
+    var blog_address = "http://blog.csdn.net/dark_scope";
+    var static_host = "http://static.blog.csdn.net";
+    var currentUserName = "";  
+</script>
+
+        <div id="body">
+            <div id="main">
+                <div class="main">
+                        <div class="ad_class">
+<div class="notice tracking-ad" data-mod="popu_3"> 
+
+
+<a href="http://blog.csdn.net/epubit17/article/details/78038722" target="_blank">
+<font color="red"><strong>异步赠书：9月重磅新书升级，本本经典</strong></font></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<a href="http://blog.csdn.net/blogdevteam/article/details/78105371" target="_blank">
+<font color="blue"><strong></strong></font></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<a href="http://blog.csdn.net/turingbooks/article/details/78017356" target="_blank">
+<font color="blue"><strong>程序员9月书讯</strong></font></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+<a href="http://blog.csdn.net/broadview2006/article/details/78018836" target="_blank">
+<font color="red"><strong>每周荐书：ES6、虚拟现实、物联网（评论送书）</strong></font></a>
+
+
+
+</div>                        </div>
+
+                        
+
+
+
+  
+
+
+
+
+
+
+<script type="text/javascript" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/category.js.下载"></script>
+
+  <script type="text/ecmascript">
+      window.quickReplyflag = true;
+      var isBole = false; 
+      var fasrc="http://my.csdn.net/my/favorite/miniadd?t=NE(Network+Embedding)%e8%ae%ba%e6%96%87%e5%b0%8f%e8%a7%88&u=http://blog.csdn.net/dark_scope/article/details/74279582"
+    </script>
+<div id="article_details" class="details">
+    <div class="article_title">   
+         <span class="ico ico_type_Original"></span>
+
+    <h1>
+        <span class="link_title"><a href="http://blog.csdn.net/dark_scope/article/details/74279582">
+        NE(Network Embedding)论文小览        
+           
+        </a>
+        </span>
+
+         
+    </h1>
+</div>
+
+   
+
+        <div class="article_manage clearfix">
+        <div class="article_l">
+            <span class="link_categories">
+            标签：
+              <a href="http://www.csdn.net/tag/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" target="_blank" onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_tag&#39;]);">机器学习</a><a href="http://www.csdn.net/tag/%e7%bd%91%e7%bb%9c" target="_blank" onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_tag&#39;]);">网络</a><a href="http://www.csdn.net/tag/%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" target="_blank" onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_tag&#39;]);">数据挖掘</a><a href="http://www.csdn.net/tag/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0" target="_blank" onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_tag&#39;]);">深度学习</a>
+            </span>
+        </div>
+        <div class="article_r">
+            <span class="link_postdate">2017-07-04 07:47</span>
+            <span class="link_view" title="阅读次数">5127人阅读</span>
+            <span class="link_comments" title="评论次数"> <a href="http://blog.csdn.net/dark_scope/article/details/74279582#comments" onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_pinglun&#39;])">评论</a>(0)</span>
+            <span class="link_collect tracking-ad" data-mod="popu_171"> <a href="javascript:void(0);" onclick="javascript:collectArticle(&#39;NE(Network+Embedding)%e8%ae%ba%e6%96%87%e5%b0%8f%e8%a7%88&#39;,&#39;74279582&#39;);return false;" title="收藏" target="_blank">收藏</a></span>
+             <span class="link_report"> <a href="http://blog.csdn.net/dark_scope/article/details/74279582#report" onclick="javascript:report(74279582,2);return false;" title="举报">举报</a></span>
+
+        </div>
+    </div>    <style type="text/css">        
+            .embody{
+                padding:10px 10px 10px;
+                margin:0 -20px;
+                border-bottom:solid 1px #ededed;                
+            }
+            .embody_b{
+                margin:0 ;
+                padding:10px 0;
+            }
+            .embody .embody_t,.embody .embody_c{
+                display: inline-block;
+                margin-right:10px;
+            }
+            .embody_t{
+                font-size: 12px;
+                color:#999;
+            }
+            .embody_c{
+                font-size: 12px;
+            }
+            .embody_c img,.embody_c em{
+                display: inline-block;
+                vertical-align: middle;               
+            }
+             .embody_c img{               
+                width:30px;
+                height:30px;
+            }
+            .embody_c em{
+                margin: 0 20px 0 10px;
+                color:#333;
+                font-style: normal;
+            }
+    </style>
+    <script type="text/javascript">
+        $(function () {
+            try
+            {
+                var lib = eval("("+$("#lib").attr("value")+")");
+                var html = "";
+                if (lib.err == 0) {
+                    $.each(lib.data, function (i) {
+                        var obj = lib.data[i];
+                        //html += '<img src="' + obj.logo + '"/>' + obj.name + "&nbsp;&nbsp;";
+                        html += ' <a href="' + obj.url + '" target="_blank">';
+                        html += ' <img src="' + obj.logo + '">';
+                        html += ' <em><b>' + obj.name + '</b></em>';
+                        html += ' </a>';
+                    });
+                    if (html != "") {
+                        setTimeout(function () {
+                            $("#lib").html(html);                      
+                            $("#embody").show();
+                        }, 100);
+                    }
+                }      
+            } catch (err)
+            { }
+            
+        });
+    </script>
+      <div class="category clearfix">
+        <div class="category_l">
+           <img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/category_icon.jpg">
+            <span>分类：</span>
+        </div>
+        <div class="category_r">
+                    <label onclick="GetCategoryArticles(&#39;1277457&#39;,&#39;Dark_Scope&#39;,&#39;top&#39;,&#39;74279582&#39;);">
+                        <span onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_fenlei&#39;]);">机器学习<em>（45）</em></span>
+                      <img class="arrow-down" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/arrow_triangle _down.jpg" style="display:inline;">
+                      <img class="arrow-up" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/arrow_triangle_up.jpg" style="display:none;">
+                        <div class="subItem">
+                            <div class="subItem_t"><a href="http://blog.csdn.net/Dark_Scope/article/category/1277457" target="_blank">作者同类文章</a><i class="J_close">X</i></div>
+                            <ul class="subItem_l" id="top_1277457">                            
+                            </ul>
+                        </div>
+                    </label>                    
+        </div>
+    </div>
+        <div class="bog_copyright">         
+            <p class="copyright_p">版权声明：本文为博主原创文章，未经博主允许不得转载。</p>
+        </div>
+
+  
+
+  
+  
+     
+
+
+<div style="clear:both"></div><div style="border:solid 1px #ccc; background:#eee; float:left; min-width:200px;padding:4px 10px;"><p style="text-align:right;margin:0;"><span style="float:left;">目录<a href="http://blog.csdn.net/dark_scope/article/details/74279582#" title="系统根据文章中H1到H6标签自动生成文章目录">(?)</a></span><a href="http://blog.csdn.net/dark_scope/article/details/74279582#" onclick="javascript:return openct(this);" title="展开">[+]</a></p><ol style="display:none;margin-left:14px;padding-left:14px;line-height:160%;"><li><a href="http://blog.csdn.net/dark_scope/article/details/74279582#t0">NENetwork Embedding论文小览</a></li><ol><li><a href="http://blog.csdn.net/dark_scope/article/details/74279582#t1">DeepWalkOnline Learning of Social Representations</a></li><ol><li><a href="http://blog.csdn.net/dark_scope/article/details/74279582#t2">node2vecScalable Feature Learning for Networks</a></li><li><a href="http://blog.csdn.net/dark_scope/article/details/74279582#t3">MMDWMax-Margin DeepWalk Discriminative Learning of Network Representation</a></li><li><a href="http://blog.csdn.net/dark_scope/article/details/74279582#t4">TADWNetwork Representation Learning with Rich Text Information</a></li><li><a href="http://blog.csdn.net/dark_scope/article/details/74279582#t5">GraRepLearning Graph Representations with Global Structural Information</a></li><li><a href="http://blog.csdn.net/dark_scope/article/details/74279582#t6">LINELarge scale information network embedding</a></li><li><a href="http://blog.csdn.net/dark_scope/article/details/74279582#t7">NEUFast Network Embedding Enhancement via High Order Proximity Approximation</a></li></ol><li><a href="http://blog.csdn.net/dark_scope/article/details/74279582#t8">Extra Info</a></li><ol><li><a href="http://blog.csdn.net/dark_scope/article/details/74279582#t9">CANEContext-Aware Network Embedding for Relation Modeling</a></li><li><a href="http://blog.csdn.net/dark_scope/article/details/74279582#t10">CENEA General Framework for Content-enhanced Network Representation Learning</a></li><li><a href="http://blog.csdn.net/dark_scope/article/details/74279582#t11">Trans-NetTranslation-Based Network Representation Learning for Social Relation Extraction</a></li></ol><li><a href="http://blog.csdn.net/dark_scope/article/details/74279582#t12">Deep Learning</a></li><ol><li><a href="http://blog.csdn.net/dark_scope/article/details/74279582#t13">SSC-GCNSemi-Supervised Classification with Graph Convolutional Networks</a></li><li><a href="http://blog.csdn.net/dark_scope/article/details/74279582#t14">SDNEStructural Deep Network Embedding</a></li></ol><li><a href="http://blog.csdn.net/dark_scope/article/details/74279582#t15">Heterogeneous</a></li><ol><li><a href="http://blog.csdn.net/dark_scope/article/details/74279582#t16">PTEPredictive Text Embedding through Large-scale Heterogeneous Text Networks</a></li><li><a href="http://blog.csdn.net/dark_scope/article/details/74279582#t17">HINESHeterogeneous Information Network Embedding for Meta Path based Proximity</a></li></ol><li><a href="http://blog.csdn.net/dark_scope/article/details/74279582#t18">总结</a></li><li><a href="http://blog.csdn.net/dark_scope/article/details/74279582#t19">Reference</a></li></ol></ol></div><div style="clear:both"></div><div id="article_content" class="article_content tracking-ad" data-mod="popu_307" data-dsm="post">
+        <div class="markdown_views"><h1 id="nenetwork-embedding论文小览"><a name="t0" target="_blank"></a>NE(Network Embedding)论文小览</h1>
+
+<p>自从word2vec横空出世，似乎一切东西都在被embedding，今天我们要关注的这个领域是Network Embedding，也就是基于一个Graph，将节点或者边投影到低维向量空间中，再用于后续的机器学习或者数据挖掘任务，对于复杂网络来说这是比较新的尝试，而且取得了一些效果。 <br>
+本文大概梳理了最近几年流行的一些方法和论文，paper主要是来自<a href="https://github.com/thunlp/NRLpapers" target="_blank">thunlp/NRLPapers</a> 这个List，并掺杂了一些其他论文。大概看了一遍，简单总结一下，希望对大家有所帮助，如有不严谨的地方，还望指正。 <br>
+抛开一些传统的流形学习方法不谈，下面大概以这个outline组织（区分并不严格）： <br>
+<img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/QQ20170703-3@2x.jpg" alt="此处输入图片的描述" title=""></p>
+
+<h2 id="deepwalkonline-learning-of-social-representations"><a name="t1" target="_blank"></a><strong>DeepWalk</strong>(Online Learning of Social Representations.)</h2>
+
+<p>DeepWalk是KDD 2014的一篇文章，彼时word2vec在文本上的成功应用掀起来一波向量化的浪潮，word2vec是根据词的共现关系，将词映射到低维向量，并保留了语料中丰富的信息。DeepWalk算法思路其实很简单，对图从一个节点开始使用random walk来生成类似文本的序列数据，然后将节点id作为一个个「词」使用skip gram训练得到「词向量」。 <br>
+思路虽然简单，背后是有一定道理的，后面一些工作有证明这样做其实等价于特殊矩阵分解(Matrix Factorization)。而DeepWalk本身也启发了后续的一系列工作。</p>
+
+
+
+<h3 id="node2vecscalable-feature-learning-for-networks"><a name="t2" target="_blank"></a><strong>node2vec</strong>(Scalable Feature Learning for Networks)</h3>
+
+<p>node2vec在DW的基础上，定义了一个bias random walk的策略生成序列，仍然用skip gram去训练。 <br>
+论文分析了BFS和DFS两种游走方式，保留的网络结构信息是不一样的。 <br>
+DeepWalk中根据边的权重进行随机游走，而node2vec加了一个权重调整参数α：t是上一个节点，v是最新节点，x是候选下一个节点。d(t,x)是t到候选节点的最小跳数。 <br>
+通过不同的p和q参数设置，来达到保留不同信息的目的。当p和q都是1.0的时候，它等价于DeepWalk。 <br>
+<img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/QQ20170701-2@2x.jpg" alt="此处输入图片的描述" title=""></p>
+
+
+
+<h3 id="mmdwmax-margin-deepwalk-discriminative-learning-of-network-representation"><a name="t3" target="_blank"></a><strong>MMDW</strong>(Max-Margin DeepWalk Discriminative Learning of Network Representation)</h3>
+
+<p>DW本身是无监督的，如果能够引入label数据，生成的向量对于分类任务会有更好的作用。 <br>
+之前提到过有证明DW实际上是对于一个特殊矩阵M的分解， <br>
+这篇文章将DeepWalk和Max-Margin（SVM）结合起来，从损失函数看是这两部分组成： <br>
+1.训练的时候是分开优化，固定<span class="MathJax_Preview"></span><span class="MathJax" id="MathJax-Element-1-Frame" role="textbox" aria-readonly="true" style=""><nobr><span class="math" id="MathJax-Span-1" style="width: 1.016em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.803em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.603em 1000em 2.616em -0.477em); top: -2.451em; left: 0.003em;"><span class="mrow" id="MathJax-Span-2"><span class="mi" id="MathJax-Span-3" style="font-family: MathJax_Math-italic;">X<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span></span><span style="display: inline-block; width: 0px; height: 2.456em;"></span></span></span><span style="border-left: 0.003em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.003em; vertical-align: -0.063em; color: rgb(255, 255, 255);"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-1">X</script>,<span class="MathJax_Preview"></span><span class="MathJax" id="MathJax-Element-2-Frame" role="textbox" aria-readonly="true" style=""><nobr><span class="math" id="MathJax-Span-4" style="width: 0.963em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.749em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.603em 1000em 2.616em -0.424em); top: -2.451em; left: 0.003em;"><span class="mrow" id="MathJax-Span-5"><span class="mi" id="MathJax-Span-6" style="font-family: MathJax_Math-italic;">Y<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.163em;"></span></span></span><span style="display: inline-block; width: 0px; height: 2.456em;"></span></span></span><span style="border-left: 0.003em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.003em; vertical-align: -0.063em; color: rgb(255, 255, 255);"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-2">Y</script>优化<span class="MathJax_Preview"></span><span class="MathJax" id="MathJax-Element-3-Frame" role="textbox" aria-readonly="true" style=""><nobr><span class="math" id="MathJax-Span-7" style="width: 1.336em; display: inline-block;"><span style="display: inline-block; position: relative; width: 1.069em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.603em 1000em 2.616em -0.424em); top: -2.451em; left: 0.003em;"><span class="mrow" id="MathJax-Span-8"><span class="mi" id="MathJax-Span-9" style="font-family: MathJax_Math-italic;">W<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.109em;"></span></span></span><span style="display: inline-block; width: 0px; height: 2.456em;"></span></span></span><span style="border-left: 0.003em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.003em; vertical-align: -0.063em; color: rgb(255, 255, 255);"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-3">W</script>和<span class="MathJax_Preview"></span><span class="MathJax" id="MathJax-Element-4-Frame" role="textbox" aria-readonly="true" style=""><nobr><span class="math" id="MathJax-Span-10" style="width: 0.536em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.429em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.603em 1000em 2.829em -0.477em); top: -2.451em; left: 0.003em;"><span class="mrow" id="MathJax-Span-11"><span class="mi" id="MathJax-Span-12" style="font-family: MathJax_Math-italic;">ξ<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span></span><span style="display: inline-block; width: 0px; height: 2.456em;"></span></span></span><span style="border-left: 0.003em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.27em; vertical-align: -0.33em; color: rgb(255, 255, 255);"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-4">\xi</script>，其实就是multi class 的 SVM。 <br>
+2.固定<span class="MathJax_Preview"></span><span class="MathJax" id="MathJax-Element-5-Frame" role="textbox" aria-readonly="true" style=""><nobr><span class="math" id="MathJax-Span-13" style="width: 1.336em; display: inline-block;"><span style="display: inline-block; position: relative; width: 1.069em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.603em 1000em 2.616em -0.424em); top: -2.451em; left: 0.003em;"><span class="mrow" id="MathJax-Span-14"><span class="mi" id="MathJax-Span-15" style="font-family: MathJax_Math-italic;">W<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.109em;"></span></span></span><span style="display: inline-block; width: 0px; height: 2.456em;"></span></span></span><span style="border-left: 0.003em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.003em; vertical-align: -0.063em; color: rgb(255, 255, 255);"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-5">W</script>和<span class="MathJax_Preview"></span><span class="MathJax" id="MathJax-Element-6-Frame" role="textbox" aria-readonly="true" style=""><nobr><span class="math" id="MathJax-Span-16" style="width: 0.536em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.429em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.603em 1000em 2.829em -0.477em); top: -2.451em; left: 0.003em;"><span class="mrow" id="MathJax-Span-17"><span class="mi" id="MathJax-Span-18" style="font-family: MathJax_Math-italic;">ξ<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span></span><span style="display: inline-block; width: 0px; height: 2.456em;"></span></span></span><span style="border-left: 0.003em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.27em; vertical-align: -0.33em; color: rgb(255, 255, 255);"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-6">\xi</script>优化<span class="MathJax_Preview"></span><span class="MathJax" id="MathJax-Element-7-Frame" role="textbox" aria-readonly="true" style=""><nobr><span class="math" id="MathJax-Span-19" style="width: 1.016em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.803em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.603em 1000em 2.616em -0.477em); top: -2.451em; left: 0.003em;"><span class="mrow" id="MathJax-Span-20"><span class="mi" id="MathJax-Span-21" style="font-family: MathJax_Math-italic;">X<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span></span><span style="display: inline-block; width: 0px; height: 2.456em;"></span></span></span><span style="border-left: 0.003em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.003em; vertical-align: -0.063em; color: rgb(255, 255, 255);"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-7">X</script>,<span class="MathJax_Preview"></span><span class="MathJax" id="MathJax-Element-8-Frame" role="textbox" aria-readonly="true" style=""><nobr><span class="math" id="MathJax-Span-22" style="width: 0.963em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.749em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.603em 1000em 2.616em -0.424em); top: -2.451em; left: 0.003em;"><span class="mrow" id="MathJax-Span-23"><span class="mi" id="MathJax-Span-24" style="font-family: MathJax_Math-italic;">Y<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.163em;"></span></span></span><span style="display: inline-block; width: 0px; height: 2.456em;"></span></span></span><span style="border-left: 0.003em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.003em; vertical-align: -0.063em; color: rgb(255, 255, 255);"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-8">Y</script>的时候稍微特殊一点，算了一个biased Gradient，因为损失函数里有x和w的组合。 <br>
+这样在训练中同时优化discrimination和representation两部分,达到一个好的效果。 <br>
+<img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/QQ20170701-6@2x.jpg" alt="此处输入图片的描述" title=""></p>
+
+
+
+<h3 id="tadwnetwork-representation-learning-with-rich-text-information"><a name="t4" target="_blank"></a><strong>TADW</strong>(Network Representation Learning with Rich Text Information.)</h3>
+
+<p>文章里有DeepWark等同于M的矩阵分解的简单证明，而在实际中，一些节点上旺旺会有文本信息，所以在矩阵分解这个框架中，将文本直接以一个子矩阵的方式加入，会使学到的向量包含更丰富的信息。 <br>
+文本矩阵是对TFIDF矩阵的SVD降维结果。 <br>
+<img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/QQ20170701-7@2x.jpg" alt="此处输入图片的描述" title=""></p>
+
+
+
+<h3 id="grareplearning-graph-representations-with-global-structural-information"><a name="t5" target="_blank"></a><strong>GraRep</strong>(Learning Graph Representations with Global Structural Information.)</h3>
+
+<p>沿用矩阵分解的思路，分析了不同k-step（random walk中的步数）所刻画的信息是不一样的： <br>
+<img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/QQ20170701-8@2x.jpg" alt="此处输入图片的描述" title=""> <br>
+所以可以对每一个step的矩阵作分解，最后将每个步骤得到的向量表示拼接起来最为最后的结果。论文中有完整的推导过程，这里就不赘述了。</p>
+
+
+
+<h3 id="linelarge-scale-information-network-embedding"><a name="t6" target="_blank"></a><strong>LINE</strong>(Large scale information network embedding)</h3>
+
+<p>LINE分析了1st order proximity和2nd order proximity，其中一度相似性就是两个点直接相连，且边权重越大说明两个点越相似，如下图中的6和7；而二度相似性则是两个点之间共享了很多邻居，则它们的相似性就很高，如下图的5和6。 <br>
+文章中非常简单的方式构造了一个目标函数，能同时保留二者的信息。以一度相似性为例，节点i和j相连的经验概率就是和归一化后的权重，即<span class="MathJax_Preview"></span><span class="MathJax" id="MathJax-Element-9-Frame" role="textbox" aria-readonly="true" style=""><nobr><span class="math" id="MathJax-Span-25" style="width: 8.909em; display: inline-block;"><span style="display: inline-block; position: relative; width: 7.096em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.869em 1000em 3.256em -0.531em); top: -2.771em; left: 0.003em;"><span class="mrow" id="MathJax-Span-26"><span class="msubsup" id="MathJax-Span-27"><span style="display: inline-block; position: relative; width: 0.963em; height: 0px;"><span style="position: absolute; clip: rect(3.096em 1000em 4.376em -0.531em); top: -3.997em; left: 0.003em;"><span class="texatom" id="MathJax-Span-28"><span class="mrow" id="MathJax-Span-29"><span class="munderover" id="MathJax-Span-30"><span style="display: inline-block; position: relative; width: 0.589em; height: 0px;"><span style="position: absolute; clip: rect(1.869em 1000em 2.829em -0.531em); top: -2.451em; left: 0.003em;"><span class="mi" id="MathJax-Span-31" style="font-family: MathJax_Math-italic;">p</span><span style="display: inline-block; width: 0px; height: 2.456em;"></span></span><span style="position: absolute; clip: rect(1.923em 1000em 2.403em -0.371em); top: -2.824em; left: 0.109em;"><span class="mo" id="MathJax-Span-32" style="font-family: MathJax_Main;">^</span><span style="display: inline-block; width: 0px; height: 2.776em;"></span></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.003em;"></span></span><span style="position: absolute; top: -2.024em; left: 0.589em;"><span class="mn" id="MathJax-Span-33" style="font-size: 70.7%; font-family: MathJax_Main;">1</span><span style="display: inline-block; width: 0px; height: 2.243em;"></span></span></span></span><span class="mo" id="MathJax-Span-34" style="font-family: MathJax_Main;">(</span><span class="mi" id="MathJax-Span-35" style="font-family: MathJax_Math-italic;">i</span><span class="mo" id="MathJax-Span-36" style="font-family: MathJax_Main;">,</span><span class="mi" id="MathJax-Span-37" style="font-family: MathJax_Math-italic; padding-left: 0.163em;">j</span><span class="mo" id="MathJax-Span-38" style="font-family: MathJax_Main;">)</span><span class="mo" id="MathJax-Span-39" style="font-family: MathJax_Main; padding-left: 0.269em;">=</span><span class="msubsup" id="MathJax-Span-40" style="padding-left: 0.269em;"><span style="display: inline-block; position: relative; width: 1.336em; height: 0px;"><span style="position: absolute; clip: rect(1.869em 1000em 2.616em -0.477em); top: -2.451em; left: 0.003em;"><span class="mi" id="MathJax-Span-41" style="font-family: MathJax_Math-italic;">w</span><span style="display: inline-block; width: 0px; height: 2.456em;"></span></span><span style="position: absolute; top: -1.864em; left: 0.749em;"><span class="texatom" id="MathJax-Span-42"><span class="mrow" id="MathJax-Span-43"><span class="mi" id="MathJax-Span-44" style="font-size: 70.7%; font-family: MathJax_Math-italic;">i</span><span class="mi" id="MathJax-Span-45" style="font-size: 70.7%; font-family: MathJax_Math-italic;">j</span></span></span><span style="display: inline-block; width: 0px; height: 2.029em;"></span></span></span></span><span class="texatom" id="MathJax-Span-46"><span class="mrow" id="MathJax-Span-47"><span class="mo" id="MathJax-Span-48" style="font-family: MathJax_Main;">/</span></span></span><span class="mi" id="MathJax-Span-49" style="font-family: MathJax_Math-italic;">W<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.109em;"></span></span></span><span style="display: inline-block; width: 0px; height: 2.776em;"></span></span></span><span style="border-left: 0.003em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.47em; vertical-align: -0.463em; color: rgb(255, 255, 255);"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-9">\hat{p}_1(i,j) = w_{ij}/W</script>，而通过向量计算这个概率值是<span class="MathJax_Preview"></span><span class="MathJax" id="MathJax-Element-10-Frame" role="textbox" aria-readonly="true" style=""><nobr><span class="math" id="MathJax-Span-50" style="width: 11.203em; display: inline-block;"><span style="display: inline-block; position: relative; width: 8.963em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.709em 1000em 3.629em -0.531em); top: -2.771em; left: 0.003em;"><span class="mrow" id="MathJax-Span-51"><span class="msubsup" id="MathJax-Span-52"><span style="display: inline-block; position: relative; width: 0.856em; height: 0px;"><span style="position: absolute; clip: rect(1.869em 1000em 2.829em -0.531em); top: -2.451em; left: 0.003em;"><span class="mi" id="MathJax-Span-53" style="font-family: MathJax_Math-italic;">p</span><span style="display: inline-block; width: 0px; height: 2.456em;"></span></span><span style="position: absolute; top: -2.024em; left: 0.483em;"><span class="mn" id="MathJax-Span-54" style="font-size: 70.7%; font-family: MathJax_Main;">1</span><span style="display: inline-block; width: 0px; height: 2.243em;"></span></span></span></span><span class="mo" id="MathJax-Span-55" style="font-family: MathJax_Main;">(</span><span class="mi" id="MathJax-Span-56" style="font-family: MathJax_Math-italic;">i</span><span class="mo" id="MathJax-Span-57" style="font-family: MathJax_Main;">,</span><span class="mi" id="MathJax-Span-58" style="font-family: MathJax_Math-italic; padding-left: 0.163em;">j</span><span class="mo" id="MathJax-Span-59" style="font-family: MathJax_Main;">)</span><span class="mo" id="MathJax-Span-60" style="font-family: MathJax_Main; padding-left: 0.269em;">=</span><span class="mfrac" id="MathJax-Span-61" style="padding-left: 0.269em;"><span style="display: inline-block; position: relative; width: 4.696em; height: 0px; margin-right: 0.109em; margin-left: 0.109em;"><span style="position: absolute; clip: rect(1.603em 1000em 2.403em -0.424em); top: -2.664em; left: 50%; margin-left: -0.157em;"><span class="mn" id="MathJax-Span-62" style="font-size: 70.7%; font-family: MathJax_Main;">1</span><span style="display: inline-block; width: 0px; height: 2.243em;"></span></span><span style="position: absolute; clip: rect(1.496em 1000em 2.616em -0.424em); top: -1.757em; left: 50%; margin-left: -2.291em;"><span class="mrow" id="MathJax-Span-63"><span class="mn" id="MathJax-Span-64" style="font-size: 70.7%; font-family: MathJax_Main;">1</span><span class="mo" id="MathJax-Span-65" style="font-size: 70.7%; font-family: MathJax_Main;">+</span><span class="mi" id="MathJax-Span-66" style="font-size: 70.7%; font-family: MathJax_Math-italic;">e</span><span class="mi" id="MathJax-Span-67" style="font-size: 70.7%; font-family: MathJax_Math-italic;">x</span><span class="mi" id="MathJax-Span-68" style="font-size: 70.7%; font-family: MathJax_Math-italic;">p</span><span class="mo" id="MathJax-Span-69" style="font-size: 70.7%; font-family: MathJax_Main;">(</span><span class="mo" id="MathJax-Span-70" style="font-size: 70.7%; font-family: MathJax_Main;">−</span><span class="msubsup" id="MathJax-Span-71"><span style="display: inline-block; position: relative; width: 0.803em; height: 0px;"><span style="position: absolute; clip: rect(1.549em 1000em 2.189em -0.477em); top: -2.024em; left: 0.003em;"><span class="mi" id="MathJax-Span-72" style="font-size: 70.7%; font-family: MathJax_Math-italic;">u</span><span style="display: inline-block; width: 0px; height: 2.029em;"></span></span><span style="position: absolute; clip: rect(1.443em 1000em 2.083em -0.477em); top: -2.184em; left: 0.376em;"><span class="mi" id="MathJax-Span-73" style="font-size: 50%; font-family: MathJax_Math-italic;">T<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.056em;"></span></span><span style="display: inline-block; width: 0px; height: 1.923em;"></span></span><span style="position: absolute; clip: rect(1.443em 1000em 2.083em -0.477em); top: -1.704em; left: 0.376em;"><span class="mi" id="MathJax-Span-74" style="font-size: 50%; font-family: MathJax_Math-italic;">i</span><span style="display: inline-block; width: 0px; height: 1.923em;"></span></span></span></span><span class="msubsup" id="MathJax-Span-75"><span style="display: inline-block; position: relative; width: 0.696em; height: 0px;"><span style="position: absolute; clip: rect(1.549em 1000em 2.189em -0.477em); top: -2.024em; left: 0.003em;"><span class="mi" id="MathJax-Span-76" style="font-size: 70.7%; font-family: MathJax_Math-italic;">u</span><span style="display: inline-block; width: 0px; height: 2.029em;"></span></span><span style="position: absolute; top: -1.811em; left: 0.376em;"><span class="mi" id="MathJax-Span-77" style="font-size: 50%; font-family: MathJax_Math-italic;">j</span><span style="display: inline-block; width: 0px; height: 1.923em;"></span></span></span></span><span class="mo" id="MathJax-Span-78" style="font-size: 70.7%; font-family: MathJax_Main;">)</span></span><span style="display: inline-block; width: 0px; height: 2.243em;"></span></span><span style="position: absolute; clip: rect(0.856em 1000em 1.229em -0.477em); top: -1.277em; left: 0.003em;"><span style="border-left: 4.696em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.25px; vertical-align: 0.003em;"></span><span style="display: inline-block; width: 0px; height: 1.069em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.776em;"></span></span></span><span style="border-left: 0.003em solid; display: inline-block; overflow: hidden; width: 0px; height: 2.137em; vertical-align: -0.93em; color: rgb(255, 255, 255);"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-10">p_1(i,j) = \frac{1}{1+exp(-u_i^Tu_j)}</script>，目标函数就是让这两个分布距离最小，选择KL散度作为距离衡量函数就得到了最后的损失函数<span class="MathJax_Preview"></span><span class="MathJax" id="MathJax-Element-11-Frame" role="textbox" aria-readonly="true" style=""><nobr><span class="math" id="MathJax-Span-79" style="width: 1.496em; display: inline-block;"><span style="display: inline-block; position: relative; width: 1.176em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(0.163em 1000em 1.336em -0.424em); top: -1.011em; left: 0.003em;"><span class="mrow" id="MathJax-Span-80"><span class="msubsup" id="MathJax-Span-81"><span style="display: inline-block; position: relative; width: 1.176em; height: 0px;"><span style="position: absolute; clip: rect(1.603em 1000em 2.616em -0.424em); top: -2.451em; left: 0.003em;"><span class="mi" id="MathJax-Span-82" style="font-family: MathJax_Math-italic;">O</span><span style="display: inline-block; width: 0px; height: 2.456em;"></span></span><span style="position: absolute; top: -2.077em; left: 0.803em;"><span class="mn" id="MathJax-Span-83" style="font-size: 70.7%; font-family: MathJax_Main;">1</span><span style="display: inline-block; width: 0px; height: 2.243em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 1.016em;"></span></span></span><span style="border-left: 0.003em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.203em; vertical-align: -0.263em; color: rgb(255, 255, 255);"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-11">O_1</script>。 <br>
+其中还有个优化的trick，edge-sampling algorithm：因为边的weight差异很大，直接用SGD效果不好，所以有个edge的采样，按照边的weight采样，然后每条边当做binary的算。 <br>
+<img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/QQ20170701-9@2x.jpg" alt="此处输入图片的描述" title=""></p>
+
+
+
+<h3 id="neufast-network-embedding-enhancement-via-high-order-proximity-approximation"><a name="t7" target="_blank"></a><strong>NEU</strong>(Fast Network Embedding Enhancement via High Order Proximity Approximation)</h3>
+
+<p>这一篇是最近发表在IJCAI上的文章，说实话是一个很取巧的方式，文章分析了一些可以视为矩阵分解的embedding方法： <br>
+<img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/QQ20170701-10@2x.jpg" alt="此处输入图片的描述" title=""> <br>
+得到一个结论，如果矩阵分解<span class="MathJax_Preview"></span><span class="MathJax" id="MathJax-Element-12-Frame" role="textbox" aria-readonly="true" style=""><nobr><span class="math" id="MathJax-Span-84" style="width: 6.083em; display: inline-block;"><span style="display: inline-block; position: relative; width: 4.856em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.869em 1000em 3.203em -0.424em); top: -2.771em; left: 0.003em;"><span class="mrow" id="MathJax-Span-85"><span class="mi" id="MathJax-Span-86" style="font-family: MathJax_Math-italic;">f<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.056em;"></span></span><span class="mo" id="MathJax-Span-87" style="font-family: MathJax_Main;">(</span><span class="mi" id="MathJax-Span-88" style="font-family: MathJax_Math-italic;">A</span><span class="mo" id="MathJax-Span-89" style="font-family: MathJax_Main;">)</span><span class="mo" id="MathJax-Span-90" style="font-family: MathJax_Main; padding-left: 0.269em;">=</span><span class="mi" id="MathJax-Span-91" style="font-family: MathJax_Math-italic; padding-left: 0.269em;">R</span><span class="mi" id="MathJax-Span-92" style="font-family: MathJax_Math-italic;">C<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.056em;"></span></span></span><span style="display: inline-block; width: 0px; height: 2.776em;"></span></span></span><span style="border-left: 0.003em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.403em; vertical-align: -0.397em; color: rgb(255, 255, 255);"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-12">f(A)=RC</script>能更精确地包括高阶信息，效果是会更好的，但带来的结果是算法的计算复杂度更高。 <br>
+所以文章采用一种很巧妙的方式，在（低阶low-order）矩阵分解的结果上更新，以获得更高阶（higher order）的分解结果，使最后的向量效果更好，这个方法是可以适用在多个算法中的。 <br>
+论文中证明了一个bound来支持这样的更新方式。 <br>
+<img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/QQ20170701-11@2x.jpg" alt="此处输入图片的描述" title=""></p>
+
+
+
+<h2 id="extra-info"><a name="t8" target="_blank"></a><strong>Extra Info</strong></h2>
+
+<p><img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/QQ20170703-1@2x.jpg" alt="此处输入图片的描述" title=""> <br>
+前面我们看的绝大多数只考虑了网络结构，但真实世界中的节点和边往往都会含有丰富的信息。如上图，在Quora场景中，每个用户自身会有一些label和文本，在一些场景里甚至边也会带上一些label，这些信息对于网络的构建其实是至关重要的，前面我们也看到了TADW将节点的文本信息纳入训练，下面罗列一些这个方向相关的论文。</p>
+
+
+
+<h3 id="canecontext-aware-network-embedding-for-relation-modeling"><a name="t9" target="_blank"></a><strong>CANE</strong>(Context-Aware Network Embedding for Relation Modeling)</h3>
+
+<p>首先考虑了节点上的Context，主要是文本，学习对每个节点产出Vt（文本向量）和Vs（结构向量） <br>
+Context-Free的话Vt是固定的，采用一个CNN的流程产出，如下图左边部分：对于一个文本，每个词的向量组成一个矩阵，然后以<span class="MathJax_Preview"></span><span class="MathJax" id="MathJax-Element-13-Frame" role="textbox" aria-readonly="true" style=""><nobr><span class="math" id="MathJax-Span-93" style="width: 0.376em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.269em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.603em 1000em 2.616em -0.424em); top: -2.451em; left: 0.003em;"><span class="mrow" id="MathJax-Span-94"><span class="mi" id="MathJax-Span-95" style="font-family: MathJax_Math-italic;">l</span></span><span style="display: inline-block; width: 0px; height: 2.456em;"></span></span></span><span style="border-left: 0.003em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.003em; vertical-align: -0.063em; color: rgb(255, 255, 255);"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-13">l</script>为窗口在d个kernel上进行CNN的卷积操作，得到的结果按行取max来获得最后的文本向量。 <br>
+Context-Aware的话引入了Attention机制，会考虑边e=(u,v)的tu和tv，通过下右图的流程产出Attention权重，再进行类似Pooling的操作（最后一步），这样节点在和不同的点连接的时候其作用是不一样的。 <br>
+A是引入的待训练参数，物理意义可能为目标维的空间变换。 <br>
+<img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/QQ20170704-1@2x.jpg" alt="此处输入图片的描述" title=""></p>
+
+
+
+<h3 id="cenea-general-framework-for-content-enhanced-network-representation-learning"><a name="t10" target="_blank"></a><strong>CENE</strong>(A General Framework for Content-enhanced Network Representation Learning)</h3>
+
+<p>这篇文章将文本转化为特殊的节点，这样就有两种连边，(节点-文档)以及(节点-节点)，对两种边一起建模，损失函数包括<span class="MathJax_Preview"></span><span class="MathJax" id="MathJax-Element-14-Frame" role="textbox" aria-readonly="true" style=""><nobr><span class="math" id="MathJax-Span-96" style="width: 1.976em; display: inline-block;"><span style="display: inline-block; position: relative; width: 1.549em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(0.163em 1000em 1.336em -0.424em); top: -1.011em; left: 0.003em;"><span class="mrow" id="MathJax-Span-97"><span class="msubsup" id="MathJax-Span-98"><span style="display: inline-block; position: relative; width: 1.549em; height: 0px;"><span style="position: absolute; clip: rect(1.603em 1000em 2.616em -0.424em); top: -2.451em; left: 0.003em;"><span class="mi" id="MathJax-Span-99" style="font-family: MathJax_Math-italic;">L</span><span style="display: inline-block; width: 0px; height: 2.456em;"></span></span><span style="position: absolute; top: -1.864em; left: 0.696em;"><span class="texatom" id="MathJax-Span-100"><span class="mrow" id="MathJax-Span-101"><span class="mi" id="MathJax-Span-102" style="font-size: 70.7%; font-family: MathJax_Math-italic;">n</span><span class="mi" id="MathJax-Span-103" style="font-size: 70.7%; font-family: MathJax_Math-italic;">n</span></span></span><span style="display: inline-block; width: 0px; height: 2.029em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 1.016em;"></span></span></span><span style="border-left: 0.003em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.203em; vertical-align: -0.263em; color: rgb(255, 255, 255);"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-14">L_{nn}</script>和<span class="MathJax_Preview"></span><span class="MathJax" id="MathJax-Element-15-Frame" role="textbox" aria-readonly="true" style=""><nobr><span class="math" id="MathJax-Span-104" style="width: 1.869em; display: inline-block;"><span style="display: inline-block; position: relative; width: 1.496em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(0.163em 1000em 1.336em -0.424em); top: -1.011em; left: 0.003em;"><span class="mrow" id="MathJax-Span-105"><span class="msubsup" id="MathJax-Span-106"><span style="display: inline-block; position: relative; width: 1.496em; height: 0px;"><span style="position: absolute; clip: rect(1.603em 1000em 2.616em -0.424em); top: -2.451em; left: 0.003em;"><span class="mi" id="MathJax-Span-107" style="font-family: MathJax_Math-italic;">L</span><span style="display: inline-block; width: 0px; height: 2.456em;"></span></span><span style="position: absolute; top: -1.864em; left: 0.696em;"><span class="texatom" id="MathJax-Span-108"><span class="mrow" id="MathJax-Span-109"><span class="mi" id="MathJax-Span-110" style="font-size: 70.7%; font-family: MathJax_Math-italic;">n</span><span class="mi" id="MathJax-Span-111" style="font-size: 70.7%; font-family: MathJax_Math-italic;">c</span></span></span><span style="display: inline-block; width: 0px; height: 2.029em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 1.016em;"></span></span></span><span style="border-left: 0.003em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.203em; vertical-align: -0.263em; color: rgb(255, 255, 255);"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-15">L_{nc}</script>，其中文本拆分为更细的句子，而句子有三种方式去embedding，下面有列举。 <br>
+和很多方法一样，Loss的减数部分是负采样出来的。 <br>
+<img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/QQ20170701-13@2x.jpg" alt="此处输入图片的描述" title=""></p>
+
+
+
+<h3 id="trans-nettranslation-based-network-representation-learning-for-social-relation-extraction"><a name="t11" target="_blank"></a><strong>Trans-Net</strong>(Translation-Based Network Representation Learning for Social Relation Extraction)</h3>
+
+<p>这篇paper也是最新2017在IJCAI上发表的，引入了机器翻译的思想，将Translation机制应用到中间，通过一个Autoencode对边上的labels(构成一个向量)进行编码，然后将节点和edge映射到同一个空间作加减。认为在这个空间里u+l=v’（每个节点有两个向量表示，分别指示在边的「起点」和「终点」时，用’进行区分） <br>
+这样预测的时候，简单用v’-u 就可以得到l，再用AE的解码器部分还原为element-binary的label set，就得到预测结果。 <br>
+<img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/QQ20170701-14@2x.jpg" alt="此处输入图片的描述" title=""></p>
+
+
+
+<h2 id="deep-learning"><a name="t12" target="_blank"></a><strong>Deep Learning</strong></h2>
+
+<p>最近几年深度学习如火如荼，严格来说，类似word2vec其实属于浅层模型，但你也可以用一些复杂的深度模型去获得embedding结果，这个思路是将网络序列化，借用NLP的方法去训练。 <br>
+<img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/QQ20170703-2@2x.jpg" alt="此处输入图片的描述" title=""> <br>
+我们知道在图像上做CNN就是对临接的像素进行卷积操作，那么如果直接对图作CNN呢？这就是GCN的思路，但这里并不详细介绍GCN，看上图应该能明白它是怎么去做的。 <br>
+还有一些工作将深度学习应用到了Network Embedding上面，之前罗列的比如CANE和Trans-Net都有这样的结构，特别是Trans-Net使用的Autoencoder就是一个神经网络。 <br>
+深度学习有很多工作都是基于一整个Graph去做的，比如判断一个Graph的某些属性，本文主要是列举对节点进行embedding的方法。</p>
+
+
+
+<h3 id="ssc-gcnsemi-supervised-classification-with-graph-convolutional-networks"><a name="t13" target="_blank"></a><strong>SSC-GCN</strong>(Semi-Supervised Classification with Graph Convolutional Networks)</h3>
+
+<blockquote>
+  <p><a href="https://github.com/tkipf/gcn" target="_blank">https://github.com/tkipf/gcn</a> <br>
+      <a href="http://tkipf.github.io/graph-convolutional-networks/" target="_blank">http://tkipf.github.io/graph-convolutional-networks/</a></p>
+</blockquote>
+
+<p>和DW完全不同的思路，引入了一个spectral convolutions操作，不过目前看起来卷积是在整个图上做的，还没有支持mini-batch，最后目标是单个节点的分类和表示学习。 <br>
+在之前的一些工作中，NN for graph都是对图级别做的，做分类等等，针对整个sub-graph，但这里本质上还是对单个节点。 <br>
+<img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/QQ20170701-15@2x.jpg" alt="此处输入图片的描述" title=""> <br>
+这里的操作是这个意思：比如说下图X中每一行是一个图节点的input feature表示，那么通过A和W可以一次次改变这个矩阵的列数，其实就是在做「全连接」操作，只是A可能是稀疏的（转移矩阵），所以可以看成是某种卷积操作，每一步将与之相连的节点的权重信息汇合到输出的这一行中。 <br>
+<img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/QQ20170701-16@2x.jpg" alt="此处输入图片的描述" title=""> <br>
+最后定义了一个semi-supervised的东西，可以将部分节点的label也作为loss的一部分，所以整体的损失函数是： <br>
+<img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/QQ20170701-17@2x.jpg" alt="此处输入图片的描述" title=""> <br>
+其中L0是有监督的部分，后面的<span class="MathJax_Preview"></span><span class="MathJax" id="MathJax-Element-16-Frame" role="textbox" aria-readonly="true" style=""><nobr><span class="math" id="MathJax-Span-112" style="width: 2.136em; display: inline-block;"><span style="display: inline-block; position: relative; width: 1.709em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(0.163em 1000em 1.496em -0.424em); top: -1.011em; left: 0.003em;"><span class="mrow" id="MathJax-Span-113"><span class="msubsup" id="MathJax-Span-114"><span style="display: inline-block; position: relative; width: 1.709em; height: 0px;"><span style="position: absolute; clip: rect(1.603em 1000em 2.616em -0.424em); top: -2.451em; left: 0.003em;"><span class="mi" id="MathJax-Span-115" style="font-family: MathJax_Math-italic;">L</span><span style="display: inline-block; width: 0px; height: 2.456em;"></span></span><span style="position: absolute; top: -1.864em; left: 0.696em;"><span class="texatom" id="MathJax-Span-116"><span class="mrow" id="MathJax-Span-117"><span class="mi" id="MathJax-Span-118" style="font-size: 70.7%; font-family: MathJax_Math-italic;">r</span><span class="mi" id="MathJax-Span-119" style="font-size: 70.7%; font-family: MathJax_Math-italic;">e</span><span class="mi" id="MathJax-Span-120" style="font-size: 70.7%; font-family: MathJax_Math-italic;">g<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.029em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 1.016em;"></span></span></span><span style="border-left: 0.003em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.337em; vertical-align: -0.463em; color: rgb(255, 255, 255);"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-16">L_{reg}</script>实际上包含了边的信息，其中<span class="MathJax_Preview"></span><span class="MathJax" id="MathJax-Element-17-Frame" role="textbox" aria-readonly="true" style=""><nobr><span class="math" id="MathJax-Span-121" style="width: 0.963em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.749em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.603em 1000em 2.616em -0.424em); top: -2.451em; left: 0.003em;"><span class="mrow" id="MathJax-Span-122"><span class="mi" id="MathJax-Span-123" style="font-family: MathJax_Math-italic;">A</span></span><span style="display: inline-block; width: 0px; height: 2.456em;"></span></span></span><span style="border-left: 0.003em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.003em; vertical-align: -0.063em; color: rgb(255, 255, 255);"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-17">A</script>是描述了所有边信息的adjacency matrix(or some function thereof). <br>
+比较有意思的是，这个网络甚至随机初始化，不训练，得到的结果分布都比较清晰（不同community的点最后会映射得比较接近），论文解释这个计算本身的逻辑有点像Weisfeiler-Lehman算法。</p>
+
+
+
+<h3 id="sdnestructural-deep-network-embedding"><a name="t14" target="_blank"></a><strong>SDNE</strong>(Structural Deep Network Embedding)</h3>
+
+<p><img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/QQ20170701-18@2x.jpg" alt="此处输入图片的描述" title=""> <br>
+中间有一部分逻辑和TransNet有点类似，它是对节点的描述特征向量（比如点的「邻接向量」）使用autoencoder编码，同时也对非0项加重惩罚了（没有连接并不代表一定没有，可能只是还没发生，所以这里对此进行了协调）：取autoencoder中间层作为向量表示，以此来让获得2nd proximity（相似邻居的点相似度较高，因为两个节点的「邻接向量」相似，说明它们共享了很多邻居，最后映射成的向量y也会更接近）。 <br>
+对于1st proximity，通过评估有连边的点的vector距离来纳入考虑。 <br>
+这两部分都纳入最后的损失函数，这里的<span class="MathJax_Preview"></span><span class="MathJax" id="MathJax-Element-18-Frame" role="textbox" aria-readonly="true" style=""><nobr><span class="math" id="MathJax-Span-124" style="width: 2.136em; display: inline-block;"><span style="display: inline-block; position: relative; width: 1.709em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(0.163em 1000em 1.496em -0.424em); top: -1.011em; left: 0.003em;"><span class="mrow" id="MathJax-Span-125"><span class="msubsup" id="MathJax-Span-126"><span style="display: inline-block; position: relative; width: 1.709em; height: 0px;"><span style="position: absolute; clip: rect(1.603em 1000em 2.616em -0.424em); top: -2.451em; left: 0.003em;"><span class="mi" id="MathJax-Span-127" style="font-family: MathJax_Math-italic;">L</span><span style="display: inline-block; width: 0px; height: 2.456em;"></span></span><span style="position: absolute; top: -1.864em; left: 0.696em;"><span class="texatom" id="MathJax-Span-128"><span class="mrow" id="MathJax-Span-129"><span class="mi" id="MathJax-Span-130" style="font-size: 70.7%; font-family: MathJax_Math-italic;">r</span><span class="mi" id="MathJax-Span-131" style="font-size: 70.7%; font-family: MathJax_Math-italic;">e</span><span class="mi" id="MathJax-Span-132" style="font-size: 70.7%; font-family: MathJax_Math-italic;">g<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.029em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 1.016em;"></span></span></span><span style="border-left: 0.003em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.337em; vertical-align: -0.463em; color: rgb(255, 255, 255);"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-18">L_{reg}</script>是正则。 <br>
+不然过这个计算要传入「邻接向量」进去的话，对于节点特别多的情况是个负担。</p>
+
+
+
+<h2 id="heterogeneous"><a name="t15" target="_blank"></a><strong>Heterogeneous</strong></h2>
+
+<p>真实世界中的网络毫无疑问是异构的(Heterogenous)，比如交易中，涉及到的节点有人、商品、店铺等等；更一般的比如知识图谱中有不同类型的节点和边，而前面描述的绝大部分工作都是在同构网络(Homogenous)的基础上进行的，所以了解异构网络的embedding对真正在实际中的应用会有帮助。</p>
+
+
+
+<h3 id="ptepredictive-text-embedding-through-large-scale-heterogeneous-text-networks"><a name="t16" target="_blank"></a><strong>PTE</strong>(Predictive Text Embedding through Large-scale Heterogeneous Text Networks.)</h3>
+
+<p><img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/QQ20170701-20@2x.jpg" alt="此处输入图片的描述" title=""> <br>
+这篇文章的主要意图是将predictive的信息在最后的embedding提现出来，但不要像CNN/RNN模型那样直接嵌套一个复杂的预测模型。所以他分别定义了三种network，word-word,word-document,word-label。都搞成类似二部图的样子，然后将各自的损失函数汇总到一起（形式都是类似的，定义经验概率和目标概率求KL距离），就是这么简单粗暴。</p>
+
+
+
+<h3 id="hinesheterogeneous-information-network-embedding-for-meta-path-based-proximity"><a name="t17" target="_blank"></a><strong>HINES</strong>(Heterogeneous Information Network Embedding for Meta Path based Proximity)</h3>
+
+<p><img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/QQ20170701-19@2x.jpg" alt="此处输入图片的描述" title=""> <br>
+这篇文章对多元异构网络（知识图谱）进行了embedding，图中有不同类型的点，不同类型的连边。引入了meta path的概念，就是不同点之间的连边是按照一定的元信息连起来的，比如A1(Author)-P1(Paper)-A2(Author)这样一个meta path表示的信息可能就是A1和A2之间合作了一篇paper，这个概念可以很好地推广到很多场景。 <br>
+一般在计算proximity的时候都是按照1st order这样的思路来的，但引入了meta path概念的时候，如果A和B在一条meta path的两端，那么它们的proximity应该更大，当然这也取决于这条元路径本身的信息量。 <br>
+文章中选择了所有长度小于l的元路径，因为一般来说路径越长其信息量越少。 <br>
+最后的损失函数同样是刻画分布的距离。</p>
+
+
+
+<h2 id="总结"><a name="t18" target="_blank"></a><strong>总结</strong></h2>
+
+<p>Network Embedding是最近几年还是有蛮多工作的，这里只列举了一些。虽然NE从NLP里借鉴了很多的思想，但二者还是有一些不同的，a.如果以节点id作为「词」，那么对于一些真实的网络来说，可能会非常稀疏，而且节点的数量会非常大，上亿是很正常的，这对上面一些方法的应用有一些限制，你可以想象存这样大的一张此表需要多大的内存。b.异构网络如何能够更好地被训练，是一个很有挑战的事情；同时节点和边上往往有着各种丰富的信息，如何能够将这些信息都学到结果向量中，也是很有意思的。</p>
+
+<p>本文并没有非常详细地去讲每篇论文，只是记录了主要思路，有兴趣可以去读原始论文。</p>
+
+
+
+<h2 id="reference"><a name="t19" target="_blank"></a><strong>Reference</strong></h2>
+
+<p>【0】上面每一个子标题括号中的内容就是对应的论文题目。 <br>
+【1】<a href="https://github.com/thunlp/NRLpapers" target="_blank">THUNLP_NRLpapers</a> <br>
+【2】《Representation Learning with Networks》by Jure Leskovec.<a href="http://t.cn/Ro3P6s8" target="_blank">slide_01</a></p></div>
+        <script type="text/javascript">
+            $(function () {
+                $('pre.prettyprint code').each(function () {
+                    var lines = $(this).text().split('\n').length;
+                    var $numbering = $('<ul/>').addClass('pre-numbering').hide();
+                    $(this).addClass('has-numbering').parent().append($numbering);
+                    for (i = 1; i <= lines; i++) {
+                        $numbering.append($('<li/>').text(i));
+                    };
+                    $numbering.fadeIn(1700);
+                });
+            });
+        </script>
+   
+</div>
+
+
+
+
+<!-- Baidu Button BEGIN -->
+
+
+
+
+<div class="bdsharebuttonbox tracking-ad bdshare-button-style0-16" style="float: right;" data-mod="popu_172" data-bd-bind="1507540407267">
+<a href="http://blog.csdn.net/dark_scope/article/details/74279582#" class="bds_more" data-cmd="more" style="background-position:0 0 !important; background-image: url(http://bdimg.share.baidu.com/static/api/img/share/icons_0_16.png?v=d754dcc0.png) !important" target="_blank"></a>
+<a href="http://blog.csdn.net/dark_scope/article/details/74279582#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间" style="background-position:0 -52px !important" target="_blank"></a>
+<a href="http://blog.csdn.net/dark_scope/article/details/74279582#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博" style="background-position:0 -104px !important" target="_blank"></a>
+<a href="http://blog.csdn.net/dark_scope/article/details/74279582#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博" style="background-position:0 -260px !important" target="_blank"></a>
+<a href="http://blog.csdn.net/dark_scope/article/details/74279582#" class="bds_renren" data-cmd="renren" title="分享到人人网" style="background-position:0 -208px !important" target="_blank"></a>
+<a href="http://blog.csdn.net/dark_scope/article/details/74279582#" class="bds_weixin" data-cmd="weixin" title="分享到微信" style="background-position:0 -1612px !important" target="_blank"></a>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion=' + ~(-new Date() / 36e5)];</script>
+<!-- Baidu Button END -->
+
+   
+
+<!--172.16.140.15-->
+
+<!-- Baidu Button BEGIN -->
+<script type="text/javascript" id="bdshare_js" data="type=tools&amp;uid=1536434" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/bds_s_v2.js.下载"></script>
+
+<script type="text/javascript">
+    document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + Math.ceil(new Date()/3600000)
+</script>
+<!-- Baidu Button END -->
+
+
+
+ 
+
+
+        <div id="digg" articleid="74279582">
+            <dl id="btnDigg" class="digg digg_disable" onclick="btndigga();">
+               
+                 <dt>顶</dt>
+                <dd>3</dd>
+            </dl>
+           
+              
+            <dl id="btnBury" class="digg digg_disable" onclick="btnburya();">
+              
+                  <dt>踩</dt>
+                <dd>0</dd>               
+            </dl>
+            
+        </div>
+     <div class="tracking-ad" data-mod="popu_222"><a href="javascript:void(0);" target="_blank">&nbsp;</a>   </div>
+    <div class="tracking-ad" data-mod="popu_223"> <a href="javascript:void(0);" target="_blank">&nbsp;</a></div>
+    <script type="text/javascript">
+        function btndigga() {
+            $(".tracking-ad[data-mod='popu_222'] a").click();
+        }
+        function btnburya() {
+            $(".tracking-ad[data-mod='popu_223'] a").click();
+        }
+            </script>
+
+   <ul class="article_next_prev">
+                <li class="prev_article"><span onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_shangyipian&#39;]);location.href=&#39;http://blog.csdn.net/Dark_Scope/article/details/70992266&#39;;">上一篇</span><a href="http://blog.csdn.net/Dark_Scope/article/details/70992266" onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_shangyipian&#39;])">采样方法（一）</a></li>
+    </ul>
+
+    <div style="clear:both; height:10px;"></div>
+
+
+            <div class="similar_article">
+                    <h4></h4>
+                    <div class="similar_c" style="margin:20px 0px 0px 0px">
+                        <div class="similar_c_t">
+                          &nbsp;&nbsp;相关文章推荐
+                        </div>
+                   
+                        <div class="similar_wrap tracking-ad" data-mod="popu_36" style="max-height:250px">                       
+                            <ul class="similar_list fl">    
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://download.csdn.net/download/happyer88/8791493" title="LDA数学八卦.pdf" strategy="BlogCommendFromBaidu_0" target="_blank">LDA数学八卦.pdf</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://edu.csdn.net/huiyiCourse/detail/569?utm_source=blog7" title="Python全栈工程师特训班--韦玮" strategy="undefined" target="_blank">Python全栈工程师特训班--韦玮</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/foolsnowman/article/details/51726007" title="Bagging" strategy="BlogCommendFromBaidu_1" target="_blank">Bagging</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://edu.csdn.net/huiyiCourse/detail/531?utm_source=blog7" title="Blink在阿里集团的应用实践--陈守元" strategy="undefined" target="_blank">Blink在阿里集团的应用实践--陈守元</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/Dream_angel_Z/article/details/48085889" title="机器学习算法-梯度树提升GTB（GBRT）" strategy="BlogCommendFromBaidu_2" target="_blank">机器学习算法-梯度树提升GTB（GBRT）</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://edu.csdn.net/course/detail/5342?utm_source=blog7" title="Vue2.x知识点面面通" strategy="undefined" target="_blank">Vue2.x知识点面面通</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/haolexiao/article/details/54884707" title="【读论文】唐建LINE那篇论文：LINE: Large-scale Information Network Embedding" strategy="BlogCommendFromCsdn_3" target="_blank">【读论文】唐建LINE那篇论文：LINE: Large-scale Information Network Embedding</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://edu.csdn.net/course/detail/6145?utm_source=blog7" title="大型Web构架设计案例解析" strategy="undefined" target="_blank">大型Web构架设计案例解析</a>
+                                   </li>
+                            </ul>
+                              <ul class="similar_list fr">      
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/lv_tianxiaomiao/article/details/69545434" title="LINE：Large-scale Information Network Embedding介绍" strategy="BlogCommendFromBaidu_4" target="_blank">LINE：Large-scale Information Network Embedding介绍</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://edu.csdn.net/course/detail/4731?utm_source=blog7" title="机器学习案例实战--欺诈检测" strategy="undefined" target="_blank">机器学习案例实战--欺诈检测</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/songrotek/article/details/50580904" title="Deep Reinforcement Learning 基础知识（DQN方面）" strategy="BlogCommendFromBaidu_5" target="_blank">Deep Reinforcement Learning 基础知识（DQN方面）</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://edu.csdn.net/course/detail/2923?utm_source=blog7" title="Android开发实战30分钟集成第三方SDK " strategy="undefined" target="_blank">Android开发实战30分钟集成第三方SDK </a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/Dark_Scope/article/details/74279582" title="NE(Network Embedding)论文小览" strategy="BlogCommendFromCsdn_6" target="_blank">NE(Network Embedding)论文小览</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/BVL10101111/article/details/75287119" title="NRL: network representation learning &amp; NE: network embedding. 相关论文总结" strategy="BlogCommendFromCsdn_7" target="_blank">NRL: network representation learning &amp; NE: network embedding. 相关论文总结</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/sparkexpert/article/details/71937786" title="CANE-Context-Aware Network Embedding for Relation Modeling论文学习" strategy="BlogCommendFromCsdn_8" target="_blank">CANE-Context-Aware Network Embedding for Relation Modeling论文学习</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/haolexiao/article/details/54884707" title="【读论文】唐建LINE那篇论文：LINE: Large-scale Information Network Embedding" strategy="BlogCommendFromCsdn_9" target="_blank">【读论文】唐建LINE那篇论文：LINE: Large-scale Information Network Embedding</a>
+                                   </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>   
+      
+</div>
+
+    <div>
+      
+        <!--u2843949广告位-->
+        <div id="_2qw7xihy11w"><div style="padding:0px;"><div><div><iframe width="728" frameborder="0" height="90" scrolling="no" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/s(1).html"></iframe></div></div></div></div><script type="text/javascript" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/rmboieuiupt.js.下载"></script>
+     </div>
+
+<div id="suggest">
+
+</div>
+         <script language="javascript" type="text/javascript">     
+             $(function(){
+                 $.get("/Dark_Scope/svc/GetSuggestContent/74279582",function(data){
+                     $("#suggest").html(data);
+                 });     
+             });             
+         </script>  
+
+
+
+            
+                                    
+            
+                                    
+
+        <!-- 广告位开始 -->
+        <!-- 广告位结束 -->
+
+
+<div class="comment_class">
+    <div id="comment_title" class="panel_head">
+        <span class="see_comment">查看评论</span><a name="comments"></a></div>
+    <div id="comment_list"><br>&nbsp;&nbsp;暂无评论<br><br><div class="clear"></div></div>
+    <div id="comment_bar">
+    </div>
+    <div id="comment_form"><div class="guest_link">您还没有登录,请<a href="javascript:void(0);" onclick="javascript:loginbox();">[登录]</a>或<a href="http://passport.csdn.net/account/register?from=http%3A%2F%2Fblog.csdn.net%2Fdark_scope%2Farticle%2Fdetails%2F74279582">[注册]</a></div></div>
+    <div class="announce">
+        * 以上用户言论只代表其个人观点，不代表CSDN网站的观点或立场<a name="reply"></a><a name="quote"></a></div>
+</div>
+
+<script type="text/javascript">
+    var fileName = '74279582';
+    var commentscount = 0;
+    var islock = false
+</script>
+
+    <div id="ad_bot">
+    </div>
+<div id="report_dialog">
+</div>
+
+<div id="d-top" style="bottom:60px;">
+
+        <a id="quick-reply" class="btn btn-top q-reply" title="快速回复" style="display:none;">
+            <img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/blog-icon-reply.png" alt="快速回复">
+        </a>    
+    <a id="d-top-a" class="btn btn-top backtop" style="display: none;" title="返回顶部" onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_huidaodingbu&#39;])">         
+         <img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/top.png" alt="TOP">
+    </a>
+</div>
+<script type="text/javascript">
+    $(function ()
+    {
+        $("#ad_frm_0").height("90px");
+        
+        setTimeout(function(){
+            $("#ad_frm_2").height("200px");
+        },1000);    
+    });
+  
+</script>
+<style type="text/css">
+    .tag_list
+    {
+        background: none repeat scroll 0 0 #FFFFFF;
+        border: 1px solid #D7CBC1;
+        color: #000000;
+        font-size: 12px;
+        line-height: 20px;
+        list-style: none outside none;
+        margin: 10px 2% 0 1%;
+        padding: 1px;
+    }
+    .tag_list h5
+    {
+        background: none repeat scroll 0 0 #E0DBD3;
+        color: #47381C;
+        font-size: 12px;
+        height: 24px;
+        line-height: 24px;
+        padding: 0 5px;
+        margin: 0;
+    }
+    .tag_list h5 a
+    {
+        color: #47381C;
+    }
+    .classify
+    {
+        margin: 10px 0;
+        padding: 4px 12px 8px;
+    }
+    .classify a
+    {
+        margin-right: 20px;
+        white-space: nowrap;
+    }
+</style>
+
+
+
+
+
+<div id="pop_win" style="display:none ;position: absolute; z-index: 10000; border: 1px solid rgb(220, 220, 220); top: 222.5px; left: 630px; opacity: 1; background: none 0px 0px repeat scroll rgb(255, 255, 255);">
+    
+</div>
+<div id="popup_mask"></div>
+<style>
+    #popup_mask
+    {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        z-index: 9999;
+        left: 0px;
+        top: 0px;
+        opacity: 0.3;
+        filter: alpha(opacity=30);
+        display: none;
+    }
+
+</style>
+
+
+
+
+<script type="text/javascript">
+    $(function(){        
+        
+        setTimeout(function(){
+            $(".comment_body:contains('回复')").each(function(index,item){
+                var u=$(this).text().split('：')[0].toString().replace("回复","")
+                var thisComment=$(this);
+                if(u)
+                {
+                    $.getJSON("https://passport.csdn.net/get/nick?callback=?", {users: u}, function(a) {
+                        if(a!=null&&a.data!=null&&a.data.length>0)
+                        {
+                            nick=a.data[0].n; 
+                            if(u!=nick)
+                            {
+                                thisComment.text(thisComment.text().replace(u,nick));  
+                            }
+                        }       
+                    });  
+                }
+            });         
+
+        },200);  
+
+        setTimeout(function(){
+            $(".math").each(function(index,value){$(this).find("span").last().css("color","#fff"); })
+        },5000);
+
+        setTimeout(function(){
+            $(".math").each(function(index,value){$(this).find("span").last().css("color","#fff"); })
+        },10000);
+
+        setTimeout(function(){
+            $(".math").each(function(index,value){$(this).find("span").last().css("color","#fff"); })
+        },15000);
+        
+        setTimeout(function(){
+            $("a img[src='http://js.tongji.linezing.com/stats.gif']").parent().css({"position":"absolute","left":"50%"});
+        },300);
+    });
+
+    function loginbox(){
+        var $logpop=$("#pop_win");
+        $logpop.html('<iframe src="https://passport.csdn.net/account/loginbox?service=http://static.blog.csdn.net/callback.htm" frameborder="0" height="600" width="400" scrolling="no"></iframe>');
+
+        $('#popup_mask').css({
+            opacity: 0.5,
+            width: $( document ).width() + 'px',
+            height:  $( document ).height() + 'px'
+        });
+        $('#popup_mask').css("display","block");
+ 
+        $logpop.css( {
+            top: ($( window ).height() - $logpop.height())/ 2  + $( window 
+       ).scrollTop() + 'px',
+            left:($( window ).width() - $logpop.width())/ 2
+        } );
+ 
+        setTimeout( function () {
+            $logpop.show();
+            $logpop.css( {
+                opacity: 1
+            } );
+        }, 200 );
+ 
+        $('#popup_mask').unbind("click");
+        $('#popup_mask').bind("click", function(){
+            $('#popup_mask').hide();
+            var $clopop = $("#pop_win");
+            $("#common_ask_div_sc").css("display","none");
+            $clopop.css( {
+                opacity: 0
+            } );
+            setTimeout( function () {
+                $clopop.hide();
+            }, 350 );
+            return false;
+        });
+    }   
+
+    var articletitle='NE(Network Embedding)论文小览';
+
+</script>
+
+
+
+
+
+
+
+
+
+
+                        <div class="clear">
+                        </div>
+                    </div>                   
+                
+            </div>
+                   
+           <div id="side">
+               
+    <div class="side">
+<div id="panel_Profile" class="panel">
+<ul class="panel_head"><span>个人资料</span></ul>
+<ul class="panel_body profile">
+<div id="blog_userface">
+    <a href="http://my.csdn.net/Dark_Scope" target="_blank">
+    <img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/1_dark_scope.jpg" title="访问我的空间" style="max-width:90%">
+    </a>
+    <br>
+    <span><a href="http://my.csdn.net/Dark_Scope" class="user_name" target="_blank">Dark_Scope</a></span>
+</div>
+<div class="interact">
+
+    <a href="javascript:void(0);" class="attent" id="span_add_follow" title="[加关注]"></a>
+
+ <a href="javascript:void(0);" class="letter" title="[发私信]" onclick="window.open(&#39;http://msg.csdn.net/letters/model?receiver=Dark_Scope&#39;,&#39;_blank&#39;,&#39;height=350,width=700&#39;);_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_sixin&#39;])"></a>  
+</div>
+<div id="blog_medal">
+                <div id="bms_box">
+                                            <a target="_blank">
+                                                    <img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/zhuanlandaren.png" onmouseover="m_over_m(this,2)" onmouseout="m_out_m()" alt="1">
+                                            </a>
+               </div>
+</div>
+<ul id="blog_rank">
+    <li>访问：<span>1228519次</span></li>
+    <li>积分：<span>6912</span> </li>    
+    <li>等级： <span style="position:relative;display:inline-block;z-index:1">
+            <img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/blog6.png" alt="" style="vertical-align: middle;" id="leveImg">
+            <div id="smallTittle" style=" position: absolute;  left: -24px;  top: 25px;  text-align: center;  width: 101px;  height: 32px;  background-color: #fff;  line-height: 32px;  border: 2px #DDDDDD solid;  box-shadow: 0px 2px 2px rgba (0,0,0,0.1);  display: none;   z-index: 999;">
+            <div style="left: 42%;  top: -8px;  position: absolute;  width: 0;  height: 0;  border-left: 10px solid transparent;  border-right: 10px solid transparent;  border-bottom: 8px solid #EAEAEA;"></div>
+            积分：6912 </div>
+        </span>  </li>
+    <li>排名：<span>第3513名</span></li>
+</ul>
+<ul id="blog_statistics">
+    <li>原创：<span>84篇</span></li>
+    <li>转载：<span>2篇</span></li>
+    <li>译文：<span>0篇</span></li>
+    <li>评论：<span>794条</span></li>
+</ul>
+</ul>
+</div>
+
+
+
+
+<div id="custom_column_21858037" class="panel">
+<ul class="panel_head"><span>个人介绍</span></ul>
+<ul class="panel_body">
+
+DarkScope，喜欢机器学习和一些ACM算法//学习ing//求交流，求指教！=新浪微博 <a href="http://weibo.com/idarkscope">
+我是Darkscope</a>
+
+</ul>
+</div><div class="panel" id="panel_Search">
+    <ul class="panel_head"><span>文章搜索</span></ul>
+    <ul class="panel_body">
+        <form id="frmSearch" action="http://so.csdn.net/search" class="form_search csdn-tracking-statistics" target="_blank" data-mod="popu_306">
+        <span><input id="inputSearch" type="text" class="blogsearch" title="请输入关键字"></span>
+        <input id="btnSubmit" type="button" value="搜索" title="search in blog">
+        <input type="hidden" name="q" id="inputQ">
+        <input type="hidden" name="t" value="blog">
+        <a id="btnSearchBlog" target="_blank"></a>
+        </form>
+    </ul>
+</div>
+
+<script type="text/javascript">
+
+   
+    $(function () {
+        $("#btnSubmit").unbind("click");
+        $("#btnSubmit").click(function () {           
+            search();
+        });
+
+        $("#frmSearch").submit(function () {           
+            search();
+            return false;
+        });
+
+        function search()
+        {
+            if ($("#inputSearch").val() == "") {               
+                alert("请录入搜索关键词！");                         
+                return false;
+            }
+            //var url = "http://so.csdn.net/so/search/s.do?q=" + encodeURIComponent($("#inputSearch").val()) + "&u=" + username + "&t=blog";           
+            var url = "https://www.baidu.com/s?wd=" + encodeURIComponent($("#inputSearch").val()) + "%20site%3Ablog.csdn.net"
+            window.location.href = url;
+        }   
+    });
+</script><div id="panel_Category" class="panel">
+    <ul class="panel_head"><span>博客专栏</span></ul>
+    <ul class="panel_body" id="sp_column">
+    <table cellpadding="0" cellspacing="0"><tbody><tr>
+    <td style="padding:10px 10px 0 0;">
+    <a href="http://blog.csdn.net/column/details/ml-t-i.html" target="_blank"><img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/20151123175624927" style="width:75px;height:75px;"></a>
+    </td>
+    <td style="padding:10px 0; vertical-align:top;">
+    <a href="http://blog.csdn.net/column/details/ml-t-i.html" target="_blank">机器学习从原理到实践</a>
+    <p>文章：5篇</p>
+    <span>阅读：259542</span>
+    </td>
+    </tr></tbody></table>
+    </ul>
+</div><div id="panel_Category" class="panel">
+<ul class="panel_head"><span>文章分类</span></ul>
+<ul class="panel_body">    
+                 <li>
+                    <a href="http://blog.csdn.net/Dark_Scope/article/category/1276935" onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_wenzhangfenlei&#39;]); ">C++</a><span>(3)</span>
+                </li>
+                 <li>
+                    <a href="http://blog.csdn.net/Dark_Scope/article/category/1277453" onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_wenzhangfenlei&#39;]); ">ACM</a><span>(7)</span>
+                </li>
+                 <li>
+                    <a href="http://blog.csdn.net/Dark_Scope/article/category/1277454" onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_wenzhangfenlei&#39;]); ">杂七杂八</a><span>(9)</span>
+                </li>
+                 <li>
+                    <a href="http://blog.csdn.net/Dark_Scope/article/category/1277455" onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_wenzhangfenlei&#39;]); ">ASM</a><span>(5)</span>
+                </li>
+                 <li>
+                    <a href="http://blog.csdn.net/Dark_Scope/article/category/1277456" onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_wenzhangfenlei&#39;]); ">QT相关</a><span>(2)</span>
+                </li>
+                 <li>
+                    <a href="http://blog.csdn.net/Dark_Scope/article/category/1277457" onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_wenzhangfenlei&#39;]); ">机器学习</a><span>(46)</span>
+                </li>
+                 <li>
+                    <a href="http://blog.csdn.net/Dark_Scope/article/category/1277459" onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_wenzhangfenlei&#39;]); ">大学杂念集</a><span>(6)</span>
+                </li>
+                 <li>
+                    <a href="http://blog.csdn.net/Dark_Scope/article/category/1277460" onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_wenzhangfenlei&#39;]); ">C/C++</a><span>(1)</span>
+                </li>
+                 <li>
+                    <a href="http://blog.csdn.net/Dark_Scope/article/category/1317401" onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_wenzhangfenlei&#39;]); ">机器学习读书笔记</a><span>(4)</span>
+                </li>
+                 <li>
+                    <a href="http://blog.csdn.net/Dark_Scope/article/category/1318942" onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_wenzhangfenlei&#39;]); ">修身养性冶情</a><span>(3)</span>
+                </li>
+                 <li>
+                    <a href="http://blog.csdn.net/Dark_Scope/article/category/1339482" onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_wenzhangfenlei&#39;]); ">web相关</a><span>(4)</span>
+                </li>
+                 <li>
+                    <a href="http://blog.csdn.net/Dark_Scope/article/category/1353861" onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_wenzhangfenlei&#39;]); ">nlp</a><span>(6)</span>
+                </li>
+                 <li>
+                    <a href="http://blog.csdn.net/Dark_Scope/article/category/1356036" onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_wenzhangfenlei&#39;]); ">代码</a><span>(14)</span>
+                </li>
+                 <li>
+                    <a href="http://blog.csdn.net/Dark_Scope/article/category/1410030" onclick="_gaq.push([&#39;_trackEvent&#39;,&#39;function&#39;, &#39;onclick&#39;, &#39;blog_articles_wenzhangfenlei&#39;]); ">趣写算法系列</a><span>(3)</span>
+                </li>
+</ul>
+</div><div id="panel_Archive" class="panel">
+<ul class="panel_head"><span>文章存档</span></ul>
+<ul class="panel_body">
+<div id="archive_list"><li><a href="http://blog.csdn.net/Dark_Scope/article/month/2017/07">2017年07月</a><span>(1)</span></li><li><a href="http://blog.csdn.net/Dark_Scope/article/month/2017/04">2017年04月</a><span>(1)</span></li><li><a href="http://blog.csdn.net/Dark_Scope/article/month/2017/03">2017年03月</a><span>(3)</span></li><li><a href="http://blog.csdn.net/Dark_Scope/article/month/2016/11">2016年11月</a><span>(2)</span></li><li><a href="http://blog.csdn.net/Dark_Scope/article/month/2015/12">2015年12月</a><span>(1)</span></li><span class="hidelist" style="display:none;"><li><a href="http://blog.csdn.net/Dark_Scope/article/month/2015/07">2015年07月</a><span>(1)</span></li><li><a href="http://blog.csdn.net/Dark_Scope/article/month/2015/03">2015年03月</a><span>(1)</span></li><li><a href="http://blog.csdn.net/Dark_Scope/article/month/2015/02">2015年02月</a><span>(1)</span></li><li><a href="http://blog.csdn.net/Dark_Scope/article/month/2014/05">2014年05月</a><span>(2)</span></li><li><a href="http://blog.csdn.net/Dark_Scope/article/month/2013/12">2013年12月</a><span>(2)</span></li><li><a href="http://blog.csdn.net/Dark_Scope/article/month/2013/11">2013年11月</a><span>(4)</span></li><li><a href="http://blog.csdn.net/Dark_Scope/article/month/2013/10">2013年10月</a><span>(1)</span></li><li><a href="http://blog.csdn.net/Dark_Scope/article/month/2013/08">2013年08月</a><span>(1)</span></li><li><a href="http://blog.csdn.net/Dark_Scope/article/month/2013/07">2013年07月</a><span>(5)</span></li><li><a href="http://blog.csdn.net/Dark_Scope/article/month/2013/05">2013年05月</a><span>(2)</span></li><li><a href="http://blog.csdn.net/Dark_Scope/article/month/2013/04">2013年04月</a><span>(2)</span></li><li><a href="http://blog.csdn.net/Dark_Scope/article/month/2013/03">2013年03月</a><span>(5)</span></li><li><a href="http://blog.csdn.net/Dark_Scope/article/month/2013/02">2013年02月</a><span>(4)</span></li><li><a href="http://blog.csdn.net/Dark_Scope/article/month/2013/01">2013年01月</a><span>(5)</span></li><li><a href="http://blog.csdn.net/Dark_Scope/article/month/2012/12">2012年12月</a><span>(3)</span></li><li><a href="http://blog.csdn.net/Dark_Scope/article/month/2012/11">2012年11月</a><span>(39)</span></li></span><div id="archive_list_button" class="list_closed">展开</div></div>
+</ul>
+</div>
+<div id="hotarticls" class="panel tracking-ad" data-mod="popu_340">
+<ul class="panel_head">
+    <span>       
+阅读排行    </span>
+</ul>
+
+<ul class="panel_body itemlist">
+<li>
+<a href="http://blog.csdn.net/dark_scope/article/details/47056361" title="RNN以及LSTM的介绍和公式梳理" target="_blank">RNN以及LSTM的介绍和公式梳理</a><span>(158857)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/dark_scope/article/details/14103983" title="AdaBoost--从原理到实现" target="_blank">AdaBoost--从原理到实现</a><span>(150533)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/dark_scope/article/details/24863289" title="GBDT(Gradient Boosting Decision Tree) 没有实现只有原理" target="_blank">GBDT(Gradient Boosting Decision Tree) 没有实现只有原理</a><span>(98190)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/dark_scope/article/details/9421061" title="【面向代码】学习 Deep Learning（一）Neural Network" target="_blank">【面向代码】学习 Deep Learning（一）Neural Network</a><span>(82037)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/dark_scope/article/details/9495505" title="【面向代码】学习 Deep Learning（三）Convolution Neural Network(CNN)" target="_blank">【面向代码】学习 Deep Learning（三）Convolution Neural Network(CNN)</a><span>(69966)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/dark_scope/article/details/8880547" title="趣写算法系列之--匈牙利算法" target="_blank">趣写算法系列之--匈牙利算法</a><span>(62233)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/dark_scope/article/details/13168827" title="决策树--从原理到实现" target="_blank">决策树--从原理到实现</a><span>(54504)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/dark_scope/article/details/9447967" title="【面向代码】学习 Deep Learning（二）Deep Belief Nets(DBNs)" target="_blank">【面向代码】学习 Deep Learning（二）Deep Belief Nets(DBNs)</a><span>(51148)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/dark_scope/article/details/17228643" title="从item-base到svd再到rbm，多种Collaborative Filtering(协同过滤算法)从原理到实现" target="_blank">从item-base到svd再到rbm，多种Collaborative Filtering(协同过滤算法)从原理到实现</a><span>(42393)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/dark_scope/article/details/9942775" title="【面向代码】学习 Deep Learning（四） Stacked Auto-Encoders(SAE)" target="_blank">【面向代码】学习 Deep Learning（四） Stacked Auto-Encoders(SAE)</a><span>(34456)</span>
+</li>
+</ul>
+</div>
+<div id="hotarticls2" class="panel tracking-ad" data-mod="popu_341">
+<ul class="panel_head"><span>评论排行</span></ul>
+<ul class="panel_body itemlist">
+<li>
+<a href="http://blog.csdn.net/dark_scope/article/details/8880547" title="趣写算法系列之--匈牙利算法" target="_blank">趣写算法系列之--匈牙利算法</a><span>(115)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/dark_scope/article/details/9421061" title="【面向代码】学习 Deep Learning（一）Neural Network" target="_blank">【面向代码】学习 Deep Learning（一）Neural Network</a><span>(113)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/dark_scope/article/details/9447967" title="【面向代码】学习 Deep Learning（二）Deep Belief Nets(DBNs)" target="_blank">【面向代码】学习 Deep Learning（二）Deep Belief Nets(DBNs)</a><span>(99)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/dark_scope/article/details/17228643" title="从item-base到svd再到rbm，多种Collaborative Filtering(协同过滤算法)从原理到实现" target="_blank">从item-base到svd再到rbm，多种Collaborative Filtering(协同过滤算法)从原理到实现</a><span>(50)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/dark_scope/article/details/9495505" title="【面向代码】学习 Deep Learning（三）Convolution Neural Network(CNN)" target="_blank">【面向代码】学习 Deep Learning（三）Convolution Neural Network(CNN)</a><span>(50)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/dark_scope/article/details/14103983" title="AdaBoost--从原理到实现" target="_blank">AdaBoost--从原理到实现</a><span>(49)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/dark_scope/article/details/8650176" title="新浪微博小爬虫" target="_blank">新浪微博小爬虫</a><span>(45)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/dark_scope/article/details/47056361" title="RNN以及LSTM的介绍和公式梳理" target="_blank">RNN以及LSTM的介绍和公式梳理</a><span>(41)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/dark_scope/article/details/8631303" title="UFLDL练习(Sparse Autoencoder)" target="_blank">UFLDL练习(Sparse Autoencoder)</a><span>(30)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/dark_scope/article/details/24863289" title="GBDT(Gradient Boosting Decision Tree) 没有实现只有原理" target="_blank">GBDT(Gradient Boosting Decision Tree) 没有实现只有原理</a><span>(27)</span>
+</li>
+</ul>
+</div>
+<div id="homepageArticles" class="panel tracking-ad" data-mod="popu_4">
+<ul class="panel_head"><span>推荐文章</span></ul>
+<ul class="panel_body" id="ad_commend">
+<ul>
+<li><a href="http://blog.csdn.net/blogdevteam/article/details/78105371" target="_blank">* CSDN新版博客feed流内测用户征集令</a></li>
+<li><a href="http://blog.csdn.net/lowprofile_coding/article/details/77852131" target="_blank">* Android检查更新下载安装</a></li>
+<li><a href="http://blog.csdn.net/yhaolpz/article/details/77366154" target="_blank">* 动手打造史上最简单的 Recycleview 侧滑菜单</a></li>
+<li><a href="http://blog.csdn.net/sweettool/article/details/77018506" target="_blank">* TCP网络通讯如何解决分包粘包问题</a></li>
+<li><a href="http://edu.csdn.net/huiyiCourse/series_detail/64" target="_blank">* SDCC 2017之大数据技术实战线上峰会</a></li>
+<li><a href="http://blog.csdn.net/pangpang123654/article/details/78012706" target="_blank">* 快速集成一个视频直播功能
+</a></li>
+
+</ul></ul>
+</div>
+
+
+<div id="newcomments" class="panel">
+<ul class="panel_head"><span>最新评论</span></ul>
+<ul class="panel_body itemlist">
+    <li>
+   
+         <a href="http://blog.csdn.net/dark_scope/article/details/50165903#comments">时间复杂度最小的最短路径算法?由这个想到的</a>
+    <p style="margin:0px;"><a href="http://blog.csdn.net/Dark_Scope" class="user_name">Dark_Scope</a>:
+@changxuanban6932:好像就是中国人写的。。。。
+    </p>
+    </li>
+    <li>
+   
+         <a href="http://blog.csdn.net/dark_scope/article/details/50165903#comments">时间复杂度最小的最短路径算法?由这个想到的</a>
+    <p style="margin:0px;"><a href="http://blog.csdn.net/changxuanban6932" class="user_name">changxuanban6932</a>:
+@Dark_Scope:我搜索了，搜到的都是中文的，我想请问有没有英文原文的连接。
+    </p>
+    </li>
+    <li>
+   
+         <a href="http://blog.csdn.net/dark_scope/article/details/50165903#comments">时间复杂度最小的最短路径算法?由这个想到的</a>
+    <p style="margin:0px;"><a href="http://blog.csdn.net/Dark_Scope" class="user_name">Dark_Scope</a>:
+@changxuanban6932:搜那段文本应该就能搜到吧
+    </p>
+    </li>
+    <li>
+   
+         <a href="http://blog.csdn.net/dark_scope/article/details/50165903#comments">时间复杂度最小的最短路径算法?由这个想到的</a>
+    <p style="margin:0px;"><a href="http://blog.csdn.net/changxuanban6932" class="user_name">changxuanban6932</a>:
+请问这个算法在google黑板报的原链接能提供一下么？比较有兴趣 想看看原文是怎么写的希望博主可以回...
+    </p>
+    </li>
+    <li>
+   
+         <a href="http://blog.csdn.net/dark_scope/article/details/8880547#comments">趣写算法系列之--匈牙利算法</a>
+    <p style="margin:0px;"><a href="http://blog.csdn.net/Dark_Scope" class="user_name">Dark_Scope</a>:
+@m0_38013346:是，算法只保证最大匹配，匹配方式可能会很多。
+    </p>
+    </li>
+    <li>
+   
+         <a href="http://blog.csdn.net/dark_scope/article/details/8880547#comments">趣写算法系列之--匈牙利算法</a>
+    <p style="margin:0px;"><a href="http://blog.csdn.net/m0_38013346" class="user_name">Uniontake</a>:
+如果4个男生交换顺序，是不是最大匹配就会不一样
+    </p>
+    </li>
+    <li>
+   
+         <a href="http://blog.csdn.net/dark_scope/article/details/70992266#comments">采样方法（一）</a>
+    <p style="margin:0px;"><a href="http://blog.csdn.net/Dark_Scope" class="user_name">Dark_Scope</a>:
+@u012990372:没有归一化的概率值，比如softmax里面的分母。
+    </p>
+    </li>
+    <li>
+   
+         <a href="http://blog.csdn.net/dark_scope/article/details/70992266#comments">采样方法（一）</a>
+    <p style="margin:0px;"><a href="http://blog.csdn.net/u012990372" class="user_name">我爱花生米</a>:
+楼主，想问一下p(x)带波浪线是什么意思，是用样本估计出的吗？
+    </p>
+    </li>
+    <li>
+   
+         <a href="http://blog.csdn.net/dark_scope/article/details/70992266#comments">趣写算法系列之--匈牙利算法</a>
+    <p style="margin:0px;"><a href="http://blog.csdn.net/Gcean" class="user_name">Gcean</a>:
+好吧我懂了~主函数里每一次都在清空usd  !!!!!!!感谢楼主
+    </p>
+    </li>
+    <li>
+   
+         <a href="http://blog.csdn.net/dark_scope/article/details/70992266#comments">趣写算法系列之--匈牙利算法</a>
+    <p style="margin:0px;"><a href="http://blog.csdn.net/Gcean" class="user_name">Gcean</a>:
+叙事很通俗易懂，但还是不能理解usd。
+    </p>
+    </li>
+</ul>
+</div>
+    </div>
+    <div class="clear">
+    </div>
+
+                   <div class="tracking-ad" data-view="true" data-mtp="63" data-order="40" data-con="ad_content_1260" style="width: 200px; height: 400px;">
+                         <div id="nav_show_top_stop" style="width: 200px; height: 500px; z-index: 1000; position: fixed; top: 3239.69px;">
+                             <div id="cpro_u2734128">
+                                  <!-- 投放代码 -->                           
+                              <!-- 请置于所有广告位代码之前 -->
+                                <script src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/ds.js.下载"></script>
+                                 <!-- 广告位：PC端-博客详情页-左侧button1-200*200 -->
+                                    <script>
+                                        (function () {
+                                            var s = "_" + Math.random().toString(36).slice(2);
+                                            document.write('<div id="' + s + '"></div>');
+                                            (window.slotbydup = window.slotbydup || []).push({
+                                                id: '4740881',
+                                                container: s,
+                                                size: '200,200',
+                                                display: 'inlay-fix'
+                                            });
+                                        })();
+                                    </script><div id="_g71y1m5qq7m"></div><script charset="utf-8" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/ecnm(1)"></script><div style=""><div style="width:0px;height:0px;"></div><iframe width="200" frameborder="0" height="200" scrolling="no" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/s(2).html"></iframe></div><script type="text/javascript" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/fapbswjpcdh.js.下载"></script>
+                             </div>
+                             <div id="cpro_u3031287">
+                                  <!-- 投放代码 -->
+                                <!-- 请置于所有广告位代码之前 -->
+                                    <script src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/ds.js.下载"></script>
+
+                                 <!-- 广告位：PC端-博客详情页-左侧button2-200*200 -->
+                                <script>
+                                    (function () {
+                                        var s = "_" + Math.random().toString(36).slice(2);
+                                        document.write('<div id="' + s + '"></div>');
+                                        (window.slotbydup = window.slotbydup || []).push({
+                                            id: '4740894',
+                                            container: s,
+                                            size: '200,200',
+                                            display: 'inlay-fix'
+                                        });
+                                    })();
+                                </script><div id="_avgwphstjbo"></div><script charset="utf-8" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/ecnm(2)"></script><div id="_n8ln5r57l5b"><iframe width="200" frameborder="0" height="200" scrolling="no" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/s(3).html"></iframe></div><script type="text/javascript" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/cxpdpgmzyaedgm.js.下载"></script>
+
+                             </div>
+
+                         </div>
+                   </div>
+                <script type="text/javascript">
+                    setTimeout(function () {
+                        var naviga_offsetTop = 0;
+                        function naviga_stay_top() { var scrollTop = jQuery(document).scrollTop(); if (scrollTop > naviga_offsetTop) { jQuery("#nav_show_top_stop").css({ "position": "fixed" }); jQuery("#nav_show_top_stop").css({ "top": "0px" }); } else { jQuery("#nav_show_top_stop").css({ "position": "fixed" }); jQuery("#nav_show_top_stop").css({ "top": naviga_offsetTop - scrollTop + "px" }); } }
+                        function onload_function() { naviga_offsetTop = jQuery("#nav_show_top_stop").position().top; jQuery(window).bind("scroll", naviga_stay_top); jQuery(window).bind("mousewheel", naviga_stay_top); jQuery(document).bind("scroll", naviga_stay_top); jQuery(document).bind("mousewheel", naviga_stay_top); } jQuery(document).ready(onload_function);
+
+                    }, 200);
+                </script>                    
+
+           </div>   
+            <div class="clear">
+            </div>
+        </div>
+
+        
+
+
+
+
+
+
+
+
+    <script type="text/javascript" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/login.js.下载"></script>
+<script type="text/javascript">
+    $(function () {
+        function __get_code_toolbar(snippet_id) {
+            return $("<span class='tracking-ad' data-mod='popu_167'><a href='https://code.csdn.net/snippets/"
+                    + snippet_id
+                    + "' target='_blank' title='在CODE上查看代码片'  style='text-indent:0;'><img src='https://code.csdn.net/assets/CODE_ico.png' width=12 height=12 alt='在CODE上查看代码片' style='position:relative;top:1px;left:2px;'/></a></span>"
+                    + "<span class='tracking-ad' data-mod='popu_170'><a href='https://code.csdn.net/snippets/"
+                    + snippet_id
+                    + "/fork' target='_blank' title='派生到我的代码片' style='text-indent:0;'><img src='https://code.csdn.net/assets/ico_fork.svg' width=12 height=12 alt='派生到我的代码片' style='position:relative;top:2px;left:2px;'/></a></span>");
+        }
+        
+        $("[code_snippet_id]").each(function () {
+            __s_id = $(this).attr("code_snippet_id");
+            if (__s_id != null && __s_id != "" && __s_id != 0 && parseInt(__s_id) > 70020) {
+                __code_tool = __get_code_toolbar(__s_id);
+                $(this).prev().find(".tools").append(__code_tool);
+            }
+        });
+
+        $(".bar").show();
+    });
+</script>
+
+
+
+
+
+    </div>
+     
+
+
+       <script type="text/javascript" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/MathJax.js.下载"></script>   
+    
+    <script src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/csdn_blog_detail.min.js.下载" type="text/javascript"></script><link rel="stylesheet" type="text/css" href="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/pub_footer_2014.css"><div class="pub_fo"><div id="pub_footerall" class="pub_footer_new"><dl><dt></dt> <dd class="foot_sub_menu"><a href="http://www.csdn.net/company/about.html" target="_blank">公司简介</a><span>|</span><a href="http://www.csdn.net/company/recruit.html" target="_blank">招贤纳士</a><span>|</span><a href="http://www.csdn.net/company/marketing.html" target="_blank">广告服务</a><span>|</span><a href="http://www.csdn.net/company/contact.html" target="_blank">联系方式</a><span>|</span><a href="http://www.csdn.net/company/statement.html" target="_blank">版权声明</a><span>|</span><a href="http://www.csdn.net/company/layer.html" target="_blank">法律顾问</a><span>|</span><a href="mailto:webmaster@csdn.net">问题报告</a><span>|</span><a target="_blank" href="http://www.csdn.net/friendlink.html">合作伙伴</a><span>|</span><a href="http://bbs.csdn.net/forums/Service" target="_blank">论坛反馈</a></dd><dd class="foot_contact"><a href="javascript:void(0);" target="_blank" class="qq">网站客服</a><a href="http://wpa.qq.com/msgrd?v=3&amp;uin=2251809102&amp;site=qq&amp;menu=yes" target="_blank" class="qq">杂志客服</a><a href="http://e.weibo.com/csdnsupport/profile" target="_blank" class="weibo">微博客服</a><a href="mailto:webmaster@csdn.net" class="email" title="联系邮箱">webmaster@csdn.net</a><span class="phone" title="服务热线">400-660-0108</span><span class="interval">|</span><span>北京创新乐知信息技术有限公司 版权所有</span><span class="interval">|</span><span>江苏知之为计算机有限公司</span><span class="interval">|</span><span>江苏乐知网络技术有限公司</span></dd><dd class="foot_copyright"><span>京&nbsp;ICP&nbsp;证&nbsp;09002463&nbsp;号</span><span class="interval">|</span><span>Copyright © 1999-2017, CSDN.NET, All Rights Reserved&nbsp;</span><a href="http://www.hd315.gov.cn/beian/view.asp?bianhao=010202001032100010" target="_blank"><img src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/gongshang_logos.gif" alt="GongshangLogo" title=""></a></dd></dl></div></div><div id="note1" class="csdn_note" style="display:none; position:absolute; z-index:9999; width:440px">  <span class="notice_top_arrow"><span class="inner"></span></span>  <div class="box"></div></div><div class="csdn_notice_tip" style="display:none; position:absolute; z-index:9990; width:170px">  <iframe src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/saved_resource(2).html" frameborder="0" scrolling="no" style="z-index:-1;position:absolute;top:0;left:0;width:100%;height:100%;background:transparent"></iframe>  <div class="tip_text">您有<strong>0</strong>条新通知</div>  <a href="javascript:void 0" class="close2"></a></div><script id="noticeScript" type="text/javascript" btnid="header_notice_num" wrapid="note1" count="5" subcount="5" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/notify.js.下载"></script><input type="hidden" id="aa_g_data_ids">
+        
+    <script type="text/javascript" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/csdn_public_blog_detail.min.js.下载"></script>
+
+    <script type="text/javascript" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/showblogmedal.ashx"></script>
+
+
+  <div id="a52b5334d" style="width: 1px; height: 1px; display: none;">
+                    <script id="adJs52b5334" src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/52b5334.js.下载"></script>
+                    <script>document.getElementById("adJs52b5334").src = "http://ads.csdn.net/js/opt/52b5334.js?t=" + Math.random();</script>
+   </div>
+          
+    <div class="pop_CA_cover" style="display:none"></div>
+    <div class="pop pop_CA" style="display:none">
+          <div class="CA_header">
+            收藏助手
+            <span class="cancel_icon" id="fapancle" onclick="$(&#39;.pop_CA&#39;).hide();$(&#39;.pop_CA_cover&#39;).hide();"></span>
+          </div>
+          <iframe src="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/saved_resource(3).html" id="fa" frameborder="0" width="100%" height="360" scrolling="no"></iframe>
+    </div>
+
+
+        <script type="text/javascript">
+
+            $(function () {
+                var fromjs = $("#fromjs");
+                if (fromjs.length > 0) {
+                    $("#fromjs .markdown_views pre").addClass("prettyprint");
+                    prettyPrint();
+
+                    $('pre.prettyprint code').each(function () {
+                        var lines = $(this).text().split('\n').length;
+                        var $numbering = $('<ul/>').addClass('pre-numbering').hide();
+                        $(this).addClass('has-numbering').parent().append($numbering);
+                        for (i = 1; i <= lines; i++) {
+                            $numbering.append($('<li/>').text(i));
+                        };
+                        $numbering.fadeIn(1700);
+                    });
+
+                    $('.pre-numbering li').css("color", "#999");
+                }
+            });
+
+            $(".markdown_views a[target!='_blank']").attr("target", "_blank");
+
+            //$(".toc a[target='_blank']").attr("target", "");
+
+            setTimeout(function () {
+                $(".toc a[target='_blank']").attr("target", "");
+            }, 500);
+
+        </script>
+
+
+   
+<div id="tag-suggest-pop">
+  <div class="relative">
+    <div class="close"></div>
+    <div class="content"></div>
+  </div>
+</div><div id="mask_code"></div><div class="gist_edit"><div class="save_snippets clearfix"><div class="tit"><h3>保存代码片</h3><span>整理和分享保存的代码片，请访问<a href="https://code.csdn.net/snippets_manage" target="_blank">代码笔记</a></span></div><div class="con_form"><ul class="gist_edit_list clearfix"><li><span class="red">*</span><span class="txt">标题</span><input id="form_title" class="form-input" placeholder="NE(Network Embedding)论文小览" type="text"></li><li><span class="red">*</span><span class="txt">描述</span><textarea id="form-textarea" class="form-textarea" placeholder="NE(Network Embedding)论文小览： http://blog.csdn.net/dark_scope/article/details/74279582"></textarea></li><li><span class="red">&nbsp;</span><span class="txt">标签</span><div id="divSearchTags"><span class="label blog_tag"><span>机器学习</span><a title="Removing tag" href="javascript:;">x</a></span><span class="label blog_tag"><span>网络</span><a title="Removing tag" href="javascript:;">x</a></span><span class="label blog_tag"><span>数据挖掘</span><a title="Removing tag" href="javascript:;">x</a></span><span class="label blog_tag"><span>深度学习</span><a title="Removing tag" href="javascript:;">x</a></span><input id="insertTag" class="insertTag" placeholder="请输入标签，按Enter生成(最多5项)" type="text" value="" name="insertTag" maxlength="21" style="color: rgb(51, 51, 51);"><input id="OrganTag" class="OrganTag" type="hidden" name="OrganTag" value="机器学习,网络,数据挖掘,深度学习,"><input id="OldOrganTag" class="OldOrganTag" type="hidden" name="OldOrganTag" value=""><input type="hidden" name="txtSearchTags"></div></li></ul></div><div class="bottom-bar"><a href="javascript:;" class="btn-submit btn-cancel">取消</a><span class="tracking-ad" data-mod="popu_250"><a class="btn-submit btn-confirm" href="javascript:;" target="_blank">确定</a></span></div></div></div><link rel="stylesheet" type="text/css" media="screen" href="./NE(Network Embedding)论文小览 - DarkScope从这里开始 - CSDN博客_files/ask_float_fonts_css-6b30a53970eb5c3a2a045e3df585b475.css"><div data-mod="popu_64" class="csdn-tracking-statistics" chg-blk="0"><a id="com-quick-QRcode" class="QRcodebg1" title="扫描二维码" style="top:188px"><span class="closeQR"></span></a><a id="com-quick-reply" title="快速回复" style="top:322px"></a><a id="com-quick-collect" title="我要收藏" style="top:360px"></a><a id="com-d-top-a" style="top:398px" title="返回顶部" onclick=""></a></div><div class="pop_edit ask_second comm_ask_second"><h3>提问</h3><span class="ask_float_span">您的问题将会被发布在“<a class="ask_float_channel" href="http://ask.csdn.net/" target="_blank" style="cursor:pointer">技术问答</a>”频道</span><a href="http://blog.csdn.net/dark_scope/article/details/74279582#" nodetype="close" class="close">×</a><div class="context"><div class="err_div"><span class="err_ico"></span><span class="err_txt">该问题已存在，请勿重复提问</span></div><div class="input_div"><input id="askInputSecond" type="text" style="font-size:14px;" placeholder="问题标题"></div><div class="cm_box"><div class="cm_dialog"></div> <div class="pop_cm cm_add_link"><input type="text" placeholder="链接内容" id="af_cm_link_txt"><input type="text" placeholder="链接地址" id="af_cm_link_url"><input type="text" placeholder="链接提示" id="af_cm_link_tit"><div class="text-right"><span class="btn btn-default btn-sm" id="add_link_btn">插入链接</span> </div> </div><div class="pop_cm cm_add_img"><div class="nav-tabs"><a class="img_tab active" href="http://blog.csdn.net/dark_scope/article/details/74279582#tab_upload">本地上传</a><a class="img_tab" href="http://blog.csdn.net/dark_scope/article/details/74279582#tab_weburl">网络图片</a></div><div class="tab_panel active" id="tab_upload"><div class="set_img"></div></div><div class="tab_panel" id="tab_weburl"><input type="text" placeholder="图片地址" id="af_cm_img_url"><input type="text" placeholder="图片说明" id="af_cm_img_alt"><div class="text-right"><span class="btn btn-default btn-sm" id="add_img_btn">插入图片</span> </div></div> </div></div> <textarea id="editor_all" rows="8" style="display: none;"></textarea><div class="editor-toolbar"><i class="separator">|</i><a class="icon-headline" title="标题一（Ctrl+Alt+1）"></a><a class="icon-heading" title="标题二（Ctrl+Alt+2）"></a><a class="icon-bold" title="粗体（Ctrl+B）"></a><a class="icon-italic" title="斜体（Ctrl+I）"></a><i class="separator">|</i><a class="icon-quote-left" title="引用（Ctrl+’）"></a><a class="icon-code" title="插入代码片（Ctrl+,）"></a><a class="icon-list-ul" title="无序列表（Ctrl+L）"></a><a class="icon-list-ol" title="有序列表（Ctrl+Alt+L）"></a><i class="separator">|</i><a class="icon-link" title="添加链接（Ctrl+K）"></a><a class="icon-picture" title="添加图片（Ctrl+Alt+I）"></a><i class="separator">|</i><a class="icon-reply" title="撤退（Ctrl+Z）"></a><a class="icon-share-alt" title="前进（Ctrl+Shift+Z）"></a><i class="separator">|</i><a class="icon-info" href="http://ask.csdn.net/pages/markdown" target="_blank" title="markdown语法参考"></a><a class="icon-preview" title="预览"></a><i class="separator">|</i></div><div class="CodeMirror cm-s-paper CodeMirror-focused"><div style="overflow: hidden; position: relative; width: 3px; height: 0px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" style="position: absolute; padding: 0px; width: 1000px; height: 1em; outline: none; font-size: 4px;" tabindex="0"></textarea></div><div class="CodeMirror-hscrollbar"><div style="height: 1px;"></div></div><div class="CodeMirror-vscrollbar"><div style="width: 1px;"></div></div><div class="CodeMirror-scrollbar-filler"></div><div class="CodeMirror-gutter-filler"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="min-width: 33px;"><div style="position: relative;"><div class="CodeMirror-lines"><div style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre>&nbsp;<span style="display: inline-block; width: 1px; margin-right: -1px;">&nbsp;</span></pre></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code"></div><div class="CodeMirror-cursor" style="">&nbsp;</div><div class="CodeMirror-cursor CodeMirror-secondarycursor" style="">&nbsp;</div></div></div></div></div><div style="position: absolute; height: 30px; width: 1px;"></div><div class="CodeMirror-gutters" style="display: none;"></div></div></div><div class="editor-statusbar"><span class="lines">0</span><span class="words">0</span><span class="cursor">0:0</span></div><div class="div_tags clearfix"><div id="divSearchTags" class="tags_con"><input type="text"></div><input type="hidden" name="txtSearchTags"></div><div id="ask2_tagRecomm_div" class="drt_tagRecomm tracking-ad" data-mod="popu_73"><span class="drt_tit">推荐标签：</span></div></div><div class="success"><div class="left_area"><input id="chk_cb" type="checkbox"><span class="wyxs">我要悬赏</span><input id="cb_num" class="cb_num" readonly="true"><span class="phib_rii"><span> 币</span></span></div><a href="http://blog.csdn.net/dark_scope/article/details/74279582#" nodetype="cancel" class="cancel">取消</a><a href="http://blog.csdn.net/dark_scope/article/details/74279582#" nodetype="ok" class="ok">发布</a></div></div><div id="common_ask_div_sc" class="searchContainer"><div class="sTitle">可能存在类似的问题：</div><div class="sFooter"><a class="sFirstNewAsk">我想提一个新问题</a></div></div><div style="position:fixed; top:0; left:0; overflow:hidden;"><input style="position:absolute; left:-300px;" type="text" value="" id="focus_retriever" readonly="true"></div><audio controls="controls" style="display: none;"></audio><div style="position: absolute; width: 0px; height: 0px; overflow: hidden; padding: 0px; border: 0px; margin: 0px;"><div id="MathJax_Font_Test" style="position: absolute; visibility: hidden; top: 0px; left: 0px; width: auto; padding: 0px; border: 0px; margin: 0px; white-space: nowrap; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; font-size: 40px; font-weight: normal; font-style: normal; font-family: MathJax_Main, sans-serif;"></div></div></body><style type="text/css">#yddContainer{display:block;font-family:Microsoft YaHei;position:relative;width:100%;height:100%;top:-4px;left:-4px;font-size:12px;border:1px solid}#yddTop{display:block;height:22px}#yddTopBorderlr{display:block;position:static;height:17px;padding:2px 28px;line-height:17px;font-size:12px;color:#5079bb;font-weight:bold;border-style:none solid;border-width:1px}#yddTopBorderlr .ydd-sp{position:absolute;top:2px;height:0;overflow:hidden}.ydd-icon{left:5px;width:17px;padding:0px 0px 0px 0px;padding-top:17px;background-position:-16px -44px}.ydd-close{right:5px;width:16px;padding-top:16px;background-position:left -44px}#yddKeyTitle{float:left;text-decoration:none}#yddMiddle{display:block;margin-bottom:10px}.ydd-tabs{display:block;margin:5px 0;padding:0 5px;height:18px;border-bottom:1px solid}.ydd-tab{display:block;float:left;height:18px;margin:0 5px -1px 0;padding:0 4px;line-height:18px;border:1px solid;border-bottom:none}.ydd-trans-container{display:block;line-height:160%}.ydd-trans-container a{text-decoration:none;}#yddBottom{position:absolute;bottom:0;left:0;width:100%;height:22px;line-height:22px;overflow:hidden;background-position:left -22px}.ydd-padding010{padding:0 10px}#yddWrapper{color:#252525;z-index:10001;background:url(chrome-extension://eopjamdnofihpioajgfdikhhbobonhbb/ab20.png);}#yddContainer{background:#fff;border-color:#4b7598}#yddTopBorderlr{border-color:#f0f8fc}#yddWrapper .ydd-sp{background-image:url(chrome-extension://eopjamdnofihpioajgfdikhhbobonhbb/ydd-sprite.png)}#yddWrapper a,#yddWrapper a:hover,#yddWrapper a:visited{color:#50799b}#yddWrapper .ydd-tabs{color:#959595}.ydd-tabs,.ydd-tab{background:#fff;border-color:#d5e7f3}#yddBottom{color:#363636}#yddWrapper{min-width:250px;max-width:400px;}</style></html>
